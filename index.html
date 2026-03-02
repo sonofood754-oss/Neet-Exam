@@ -11,15 +11,16 @@
         @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .timer-low { animation: pulse-red 1s infinite; color: #f43f5e !important; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        body { -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans text-slate-900 pb-80">
 
-    <div id="startOverlay" class="fixed inset-0 z-[200] bg-indigo-950 flex items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-[2.5rem] max-w-md w-full text-center shadow-2xl">
+    <div id="startOverlay" class="fixed inset-0 z-[200] bg-indigo-950 flex items-center justify-center p-6 text-center">
+        <div class="bg-white p-8 rounded-[2.5rem] max-w-md w-full shadow-2xl">
             <h1 class="text-3xl font-black text-indigo-900 mb-2">NEET STRIDE PRO</h1>
-            <p class="text-slate-500 text-sm mb-6">3 Hour Timed Session. Ensure your Answer Key is ready before starting.</p>
-            <button onclick="startExamNow()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">START EXAM</button>
+            <p class="text-slate-500 text-sm mb-6 uppercase font-bold tracking-widest">3 Hour Timer • 180 Questions</p>
+            <button onclick="startExamNow()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xl shadow-lg active:scale-95 transition-all">START EXAM</button>
         </div>
     </div>
 
@@ -30,7 +31,7 @@
                 <div id="timerDisplay" class="bg-indigo-900 px-4 py-1 rounded-full font-mono font-bold text-indigo-300 border border-indigo-700">03:00:00</div>
             </div>
             <div class="flex items-center gap-3">
-                <input type="text" id="studentName" placeholder="Student Name" class="bg-indigo-900 border border-indigo-700 text-white px-3 py-2 rounded-xl text-xs w-32 outline-none">
+                <input type="text" id="studentName" placeholder="Student Name" class="bg-indigo-900 border border-indigo-700 text-white px-3 py-2 rounded-xl text-xs w-32 outline-none focus:ring-1 focus:ring-indigo-400">
                 <button onclick="window.location.reload()" class="bg-rose-600 px-4 py-2 rounded-xl font-bold text-[10px] shadow-lg active:scale-95">RESET</button>
             </div>
         </div>
@@ -40,24 +41,24 @@
         <section class="mb-10 bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="block text-xs font-black uppercase text-indigo-900">Scan Printed Key</label>
-                    <input type="file" id="imageInput" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-bold">
-                    <button id="ocrBtn" onclick="parseImage()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-md">SCAN IMAGE</button>
+                    <label class="block text-xs font-black uppercase text-indigo-900">OCR Scan Answer Key</label>
+                    <input type="file" id="imageInput" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-bold cursor-pointer">
+                    <button id="ocrBtn" onclick="parseImage()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-md active:scale-95 transition-all">START OCR SCAN</button>
                 </div>
                 <div class="space-y-2 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
-                    <label class="block text-xs font-black uppercase text-slate-500">Manual Key String</label>
-                    <textarea id="textInput" class="w-full h-10 p-2 border border-slate-200 rounded-xl text-xs outline-none" placeholder="Paste 180 digits..."></textarea>
-                    <button onclick="parseText()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs shadow-md">LOCK KEY</button>
+                    <label class="block text-xs font-black uppercase text-slate-500">Manual Key Input</label>
+                    <textarea id="textInput" class="w-full h-10 p-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-400" placeholder="Paste 180 digits (1-4) here..."></textarea>
+                    <button onclick="parseText()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs shadow-md active:scale-95 transition-all">LOCK KEY</button>
                 </div>
             </div>
         </section>
 
         <div class="flex flex-col items-center gap-4 mb-12">
-            <button id="submitBtn" onclick="submitExam()" class="bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-2xl hover:bg-indigo-700 active:scale-95 transition-all">FINISH & EVALUATE</button>
-            <button id="downloadBtn" onclick="generatePDF()" class="hidden bg-emerald-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-xl hover:bg-emerald-700 flex items-center gap-2">📥 DOWNLOAD REPORT</button>
+            <button id="submitBtn" onclick="submitExam()" class="bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-2xl active:scale-95 transition-all">FINISH & EVALUATE</button>
+            <button id="downloadBtn" onclick="generatePDF()" class="hidden bg-emerald-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-xl flex items-center gap-2 active:scale-95 transition-all">📥 DOWNLOAD ANALYSIS</button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="omrGrid"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10" id="omrGrid"></div>
     </main>
 
     <div id="scoreBoard" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl glass border-t-4 border-indigo-600 rounded-[2.5rem] shadow-2xl p-6 z-40 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -79,15 +80,15 @@
             </div>
         </div>
         <div class="text-center md:pl-6 md:border-l-2 border-slate-100">
-            <p class="text-[9px] font-black text-slate-400 uppercase">Grand Total</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase">Final Score</p>
             <p id="resTotal" class="text-5xl font-black text-indigo-700 leading-none">0</p>
-            <p class="text-[10px] font-bold text-slate-300">/ 720</p>
+            <p class="text-[10px] font-bold text-slate-300 mt-1">/ 720</p>
         </div>
     </div>
 
     <script>
         let masterKey = [], userSel = new Array(180).fill(null), isDone = false;
-        let timeLeft = 3 * 60 * 60; // 3 Hours
+        let timeLeft = 3 * 60 * 60; // 3 Hours (10800 seconds)
 
         function startExamNow() {
             document.getElementById('startOverlay').style.display = 'none';
@@ -115,14 +116,14 @@
             subjects.forEach(sub => {
                 const col = document.createElement('div');
                 col.className = "space-y-1";
-                col.innerHTML = `<div class="bg-indigo-50 text-indigo-700 p-2 rounded-xl text-center font-black text-[10px] uppercase border border-indigo-100">${sub.name}</div>`;
+                col.innerHTML = `<div class="bg-indigo-50 text-indigo-700 p-2 rounded-xl text-center font-black text-[10px] uppercase border border-indigo-100 italic">${sub.name}</div>`;
                 for (let i = sub.range[0]; i <= sub.range[1]; i++) {
                     const row = document.createElement('div');
                     row.className = "flex items-center justify-between p-2 bg-white rounded-xl border border-slate-100 shadow-sm";
                     row.innerHTML = `
                         <span class="text-[10px] font-black text-slate-300 w-5">${i}</span>
                         <div class="flex gap-1">
-                            ${[1,2,3,4].map(n => `<button onclick="selectBubble(${i},'${n}',this)" class="w-7 h-7 rounded-lg border-2 border-slate-100 text-[10px] font-bold text-slate-400 hover:border-indigo-200 transition-all">${n}</button>`).join('')}
+                            ${[1,2,3,4].map(n => `<button onclick="selectBubble(${i},'${n}',this)" class="w-7 h-7 rounded-lg border-2 border-slate-100 text-[10px] font-bold text-slate-400 hover:border-indigo-200 transition-all focus:outline-none">${n}</button>`).join('')}
                         </div>`;
                     col.appendChild(row);
                 }
@@ -146,26 +147,30 @@
         function parseText() {
             const val = document.getElementById('textInput').value;
             masterKey = val.match(/[1-4]/g) || [];
-            if (masterKey.length >= 180) alert("Master Key Locked!");
-            else alert("Error: Found " + masterKey.length + " answers.");
+            if (masterKey.length >= 180) alert("Answer Key Locked!");
+            else alert("Error: Found " + masterKey.length + " digits. Need 180.");
         }
 
         async function parseImage() {
             const file = document.getElementById('imageInput').files[0];
-            if (!file) return alert("Select an image first.");
+            if (!file) return alert("Select image first.");
             const btn = document.getElementById('ocrBtn'); btn.innerText = "SCANNING...";
-            const worker = await Tesseract.createWorker('eng');
-            const { data: { text } } = await worker.recognize(file);
-            let all = text.match(/\d+/g) || [], filtered = [];
-            for (let i = 0; i < all.length; i++) {
-                let n = parseInt(all[i]);
-                if (n >= 1 && n <= 180 && ["1","2","3","4"].includes(all[i+1])) { filtered[n-1] = all[i+1]; i++; }
-            }
-            masterKey = filtered; alert("Scan Complete!"); await worker.terminate(); btn.innerText = "SCAN IMAGE";
+            try {
+                const worker = await Tesseract.createWorker('eng');
+                const { data: { text } } = await worker.recognize(file);
+                let all = text.match(/\d+/g) || [], filtered = [];
+                for (let i = 0; i < all.length; i++) {
+                    let n = parseInt(all[i]);
+                    if (n >= 1 && n <= 180 && ["1","2","3","4"].includes(all[i+1])) { filtered[n-1] = all[i+1]; i++; }
+                }
+                masterKey = filtered; alert("Scan Complete!"); await worker.terminate();
+            } catch (e) { alert("OCR Failed. Use Manual Input."); }
+            btn.innerText = "START OCR SCAN";
         }
 
         function submitExam() {
             if (masterKey.length < 180) return alert("Setup the Answer Key first!");
+            if (!confirm("Confirm submission?")) return;
             isDone = true;
             document.getElementById('submitBtn').classList.add('hidden');
             document.getElementById('downloadBtn').classList.remove('hidden');
@@ -206,55 +211,55 @@
         }
 
         function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const name = document.getElementById('studentName').value || "Candidate";
-    const stats = updateUI();
-    const total = document.getElementById('resTotal').innerText;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const name = document.getElementById('studentName').value || "Candidate";
+            const stats = updateUI();
+            const total = document.getElementById('resTotal').innerText;
 
-    // Report Header
-    doc.setFillColor(30, 27, 75); doc.rect(0, 0, 210, 45, 'F');
-    doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET PERFORMANCE REPORT", 15, 20);
-    doc.setFontSize(10); doc.text(`STUDENT: ${name.toUpperCase()} | SCORE: ${total}/720`, 15, 33);
+            doc.setFillColor(30, 27, 75); doc.rect(0, 0, 210, 45, 'F');
+            doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET PERFORMANCE REPORT", 15, 20);
+            doc.setFontSize(10); doc.text(`STUDENT: ${name.toUpperCase()} | SCORE: ${total}/720`, 15, 33);
 
-    // Summary Table
-    doc.setFillColor(245, 247, 250); doc.rect(15, 52, 180, 25, 'F');
-    doc.setTextColor(0); doc.setFontSize(9);
-    doc.text("SUBJECT", 20, 58); doc.text("SCORE", 70, 58); doc.text("CORRECT", 100, 58); doc.text("MISTAKES", 135, 58); doc.text("SKIPPED", 170, 58);
-    
-    let y = 65;
-    [['Physics', stats.phy], ['Chemistry', stats.chem], ['Biology', stats.bio]].forEach(row => {
-        doc.text(row[0], 20, y); doc.text(row[1].p.toString(), 70, y); doc.text(row[1].c.toString(), 100, y); doc.text(row[1].m.toString(), 135, y); doc.text(row[1].u.toString(), 170, y);
-        y += 5;
-    });
+            doc.setFillColor(245, 247, 250); doc.rect(15, 52, 180, 25, 'F');
+            doc.setTextColor(0); doc.setFontSize(9);
+            doc.text("SUBJECT", 20, 58); doc.text("SCORE", 70, 58); doc.text("CORRECT", 100, 58); doc.text("MISTAKES", 135, 58); doc.text("SKIPPED", 170, 58);
+            
+            let y = 65;
+            [['Physics', stats.phy], ['Chemistry', stats.chem], ['Biology', stats.bio]].forEach(row => {
+                doc.text(row[0], 20, y); doc.text(row[1].p.toString(), 70, y); doc.text(row[1].c.toString(), 100, y); doc.text(row[1].m.toString(), 135, y); doc.text(row[1].u.toString(), 170, y);
+                y += 5;
+            });
 
-    // OMR Grid
-    let yGrid = 90;
-    for (let i = 0; i < 180; i++) {
-        let col = Math.floor(i/45), row = i%45, x = 15+(col*46), yPos = yGrid+(row*4);
-        doc.setFontSize(5); doc.setTextColor(180); doc.text(`${i+1}`, x, yPos);
-        for (let b = 1; b <= 4; b++) {
-            let bx = x+6+(b*5), sel = userSel[i], cor = masterKey[i];
-            if (sel == b) { doc.setFillColor(sel == cor ? [16,185,129] : [244,63,94]); doc.circle(bx, yPos-1, 1.2, 'F'); }
-            else if (cor == b && sel !== null) { doc.setDrawColor(16,185,129); doc.circle(bx, yPos-1, 1.2, 'D'); }
-            else { doc.setDrawColor(220); doc.circle(bx, yPos-1, 1.2, 'D'); }
+            let yGrid = 90;
+            for (let i = 0; i < 180; i++) {
+                let col = Math.floor(i/45), row = i%45, x = 15+(col*46), yPos = yGrid+(row*4);
+                doc.setFontSize(5); doc.setTextColor(180); doc.text(`${i+1}`, x, yPos);
+                for (let b = 1; b <= 4; b++) {
+                    let bx = x+6+(b*5), sel = userSel[i], cor = masterKey[i];
+                    if (sel == b) { doc.setFillColor(sel == cor ? [16,185,129] : [244,63,94]); doc.circle(bx, yPos-1, 1.2, 'F'); }
+                    else if (cor == b && sel !== null) { doc.setDrawColor(16,185,129); doc.circle(bx, yPos-1, 1.2, 'D'); }
+                    else { doc.setDrawColor(220); doc.circle(bx, yPos-1, 1.2, 'D'); }
+                }
+            }
+
+            // iPad Safari Download Fix
+            const pdfBlob = doc.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${name}_NEET_Result.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                // Open in new tab if download trigger fails
+                if(!link.clicked) window.open(url, '_blank');
+            }, 100);
         }
-    }
 
-    // SAFARI FIX: Instead of .save(), we use a Blob URL
-    const pdfBlob = doc.output('blob');
-    const url = URL.createObjectURL(pdfBlob);
-    
-    // Create a hidden link and click it
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${name}_NEET_Analysis.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Backup for very old iPads: Open in new tab
-    setTimeout(() => {
-        if (!link.clicked) window.open(url, '_blank');
-    }, 500);
-}
+        init(); // Starts the grid immediately
+    </script>
+</body>
+</html>
