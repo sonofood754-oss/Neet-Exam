@@ -326,73 +326,99 @@
         }
 
         // 7. MULTI-FAILSAFE PDF GENERATOR (The Android/iPad Fix)
-        function generateForensicPDF() {
-            alert("Generating Secure Report... please wait.");
+                function generateForensicPDF() {
             try {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const name = (document.getElementById('userName').value || "ANONYMOUS").toUpperCase();
+                // Use 'pt' instead of 'mm' for better mobile precision
+                const doc = new jsPDF('p', 'pt', 'a4');
+                const name = (document.getElementById('userName').value || "CANDIDATE").toUpperCase();
                 const total = document.getElementById('totalScore').innerText;
 
-                // PDF Header
-                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 45, 'F');
-                doc.setTextColor(255); doc.setFontSize(24); doc.text("NEET FORENSIC AUDIT", 15, 22);
-                doc.setFontSize(10); doc.text(`CANDIDATE: ${name} | SCORE: ${total}/720`, 15, 33);
+                // 1. Header with Solid Colors
+                doc.setFillColor(15, 23, 42); 
+                doc.rect(0, 0, 600, 120, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(24);
+                doc.text("NEET FORENSIC AUDIT", 40, 60);
+                doc.setFontSize(12);
+                doc.text(`CANDIDATE: ${name} | TOTAL SCORE: ${total}/720`, 40, 90);
 
-                // Sectional Summary
-                doc.setTextColor(15, 23, 42); doc.setFontSize(12); doc.text("PERFORMANCE SUMMARY", 15, 55);
-                let y = 65;
+                // 2. Sectional Audit
+                doc.setTextColor(40, 40, 40);
+                doc.setFontSize(14);
+                doc.text("PERFORMANCE SUMMARY", 40, 160);
+                
+                let y = 180;
                 const stats = [
-                    ["Physics", document.getElementById('pScore').innerText],
-                    ["Chemistry", document.getElementById('cScore').innerText],
-                    ["Biology", document.getElementById('bScore').innerText]
+                    {label: "Physics", score: document.getElementById('pScore').innerText},
+                    {label: "Chemistry", score: document.getElementById('cScore').innerText},
+                    {label: "Biology", score: document.getElementById('bScore').innerText}
                 ];
-                stats.forEach(s => {
-                    doc.setFillColor(248, 250, 252); doc.rect(15, y, 180, 12, 'F');
-                    doc.setFontSize(10); doc.text(s[0], 20, y+8); doc.text(s[1] + " Marks", 165, y+8);
-                    y += 15;
+
+                stats.forEach(item => {
+                    doc.setFillColor(245, 247, 250);
+                    doc.roundedRect(40, y, 515, 30, 5, 5, 'F');
+                    doc.setFontSize(11);
+                    doc.text(item.label, 60, y + 20);
+                    doc.text(item.score + " Marks", 480, y + 20);
+                    y += 40;
                 });
 
-                // OMR Visualization
-                doc.setFontSize(11); doc.text("VISUAL OMR RECONSTRUCTION", 15, y+5);
-                let sX = 15, sY = y+15, colW = 46, rowH = 4.2;
-                for(let i=0; i<180; i++){
-                    let col = Math.floor(i/45), row = i%45;
-                    let x = sX + (col*colW), yp = sY + (row*rowH);
-                    doc.setTextColor(200); doc.setFontSize(5); doc.text(`${i+1}`, x, yp);
-                    for(let b=1; b<=4; b++){
-                        let bx = x+6+(b*6.5), by = yp-1;
-                        if(STUDENT_ANSWERS[i] == b) {
-                            doc.setFillColor(STUDENT_ANSWERS[i] == MASTER_KEY[i] ? [16,185,129] : [244,63,94]);
-                            doc.circle(bx, by, 1.4, 'F');
-                        } else if(MASTER_KEY[i] == b && STUDENT_ANSWERS[i] !== null) {
-                            doc.setDrawColor(16, 185, 129); doc.circle(bx, by, 1.4, 'D');
+                // 3. Visual OMR Grid
+                doc.setFontSize(14);
+                doc.text("OMR RECONSTRUCTION", 40, y + 20);
+                
+                let startX = 40, startY = y + 50, colW = 130, rowH = 12;
+
+                for(let i = 0; i < 180; i++) {
+                    let col = Math.floor(i / 45);
+                    let row = i % 45;
+                    let x = startX + (col * colW);
+                    let yp = startY + (row * rowH);
+
+                    // Question Number
+                    doc.setTextColor(180, 180, 180);
+                    doc.setFontSize(6);
+                    doc.text(`${i + 1}`, x, yp);
+
+                    // Bubbles
+                    for(let b = 1; b <= 4; b++) {
+                        let bx = x + 20 + (b * 18);
+                        let by = yp - 2;
+                        
+                        // Default Gray
+                        doc.setDrawColor(220, 220, 220);
+                        
+                        if (STUDENT_ANSWERS[i] == b) {
+                            // Selected Bubble
+                            if (STUDENT_ANSWERS[i] == MASTER_KEY[i]) {
+                                doc.setFillColor(16, 185, 129); // Green
+                            } else {
+                                doc.setFillColor(244, 63, 94); // Red
+                            }
+                            doc.circle(bx, by, 4, 'F');
+                        } else if (MASTER_KEY[i] == b && STUDENT_ANSWERS[i] !== null) {
+                            // Correct Answer (Dashed Outline)
+                            doc.setDrawColor(16, 185, 129);
+                            doc.circle(bx, by, 4, 'D');
                         } else {
-                            doc.setDrawColor(226, 232, 240); doc.circle(bx, by, 1.4, 'D');
+                            // Empty Bubble
+                            doc.circle(bx, by, 4, 'D');
                         }
                     }
                 }
 
-                // --- PATH 1: ANDROID CHROME DATA URI ---
-                const dataUri = doc.output('datauristring');
-                const dlLink = document.createElement('a');
-                dlLink.href = dataUri;
-                dlLink.download = `NEET_RESULT_${name}.pdf`;
-                document.body.appendChild(dlLink);
-                dlLink.click();
-                
-                // --- PATH 2: IPAD BLOB WINDOW ---
-                setTimeout(() => {
-                    const blob = doc.output('blob');
-                    const url = URL.createObjectURL(blob);
-                    window.open(url, '_blank');
-                    document.body.removeChild(dlLink);
-                }, 1000);
+                // Final Output Path - Data URI is most compatible for mobile
+                const pdfOutput = doc.output('datauristring');
+                const link = document.createElement('a');
+                link.href = pdfOutput;
+                link.download = `NEET_Report_${name}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
             } catch (err) {
-                alert("PDF Error: " + err.message);
+                console.error(err);
+                alert("Mobile Engine Error: " + err.message);
             }
         }
-    </script>
-</body>
-</html>
