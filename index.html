@@ -217,45 +217,96 @@
         }
 
         async function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const name = document.getElementById('nameInp').value || "Candidate";
-            const score = document.getElementById('total_score').innerText;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const name = (document.getElementById('nameInp').value || "Candidate").toUpperCase();
+    const score = document.getElementById('total_score').innerText;
+    const pVal = document.getElementById('p_score').innerText;
+    const cVal = document.getElementById('c_score').innerText;
+    const bVal = document.getElementById('b_score').innerText;
 
-            // Premium PDF Styling
-            doc.setFillColor(30, 41, 59);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.text("NEET PERFORMANCE REPORT", 15, 20);
-            doc.setFontSize(10);
-            doc.text(`STUDENT: ${name.toUpperCase()} | TOTAL SCORE: ${score}/720`, 15, 30);
+    // --- HEADER SECTION ---
+    doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET PERFORMANCE REPORT", 15, 20);
+    doc.setFontSize(10); doc.text(`STUDENT: ${name}  |  TOTAL SCORE: ${score}/720`, 15, 30);
 
-            doc.setTextColor(30, 41, 59);
-            doc.text("Evaluated via NEET STRIDE PRO Engine", 15, 50);
+    // --- ANALYTICS TABLE ---
+    doc.setTextColor(30, 41, 59); doc.setFontSize(12); doc.text("Subject Analysis", 15, 50);
+    doc.setDrawColor(226, 232, 240); doc.line(15, 52, 195, 52);
 
-            // Detailed Subject Breakdown
-            const subjects = [
-                { s: "Physics", r: document.getElementById('p_score').innerText },
-                { s: "Chemistry", r: document.getElementById('c_score').innerText },
-                { s: "Biology", r: document.getElementById('b_score').innerText }
-            ];
+    let tableY = 60;
+    const stats = [
+        { s: "Physics", m: pVal, acc: Math.max(0, (pVal/180)*100).toFixed(1) + "%" },
+        { s: "Chemistry", m: cVal, acc: Math.max(0, (cVal/180)*100).toFixed(1) + "%" },
+        { s: "Biology", m: bVal, acc: Math.max(0, (bVal/360)*100).toFixed(1) + "%" }
+    ];
 
-            let y = 65;
-            subjects.forEach(sub => {
-                doc.setFillColor(248, 250, 252);
-                doc.rect(15, y, 180, 15, 'F');
-                doc.setFontSize(11);
-                doc.text(sub.s, 20, y + 10);
-                doc.text(sub.r + " Marks", 170, y + 10);
-                y += 20;
-            });
+    stats.forEach(item => {
+        doc.setFillColor(248, 250, 252); doc.rect(15, tableY, 180, 10, 'F');
+        doc.setFontSize(10); doc.setTextColor(71, 85, 105);
+        doc.text(item.s, 20, tableY + 6.5);
+        doc.text("Score: " + item.m, 80, tableY + 6.5);
+        doc.text("Relative Accuracy: " + item.acc, 130, tableY + 6.5);
+        tableY += 12;
+    });
 
-            // iPad & Brave Browser Direct View Trigger
-            const pdfOutput = doc.output('blob');
-            const blobUrl = URL.createObjectURL(pdfOutput);
-            window.open(blobUrl, '_blank');
+    // --- VISUAL OMR GRID GENERATOR ---
+    doc.setFontSize(11); doc.setTextColor(30, 41, 59); doc.text("Detailed Response Grid", 15, tableY + 5);
+    doc.setFontSize(6); doc.setTextColor(148, 163, 184);
+    doc.text("Green = Correct | Red = Wrong | Circle = Your Choice | Dash = Key", 15, tableY + 9);
+
+    let startX = 15;
+    let startY = tableY + 15;
+    let colWidth = 46;
+    let rowHeight = 4.2;
+
+    for (let i = 0; i < 180; i++) {
+        let col = Math.floor(i / 45);
+        let row = i % 45;
+        let x = startX + (col * colWidth);
+        let y = startY + (row * rowHeight);
+
+        // Question Number
+        doc.setTextColor(148, 163, 184); doc.setFontSize(5);
+        doc.text(`${i + 1}`, x, y);
+
+        // Draw 4 Bubbles for each question
+        for (let b = 1; b <= 4; b++) {
+            let bx = x + 6 + (b * 6.5);
+            let by = y - 1;
+            let userChoice = ANS[i];
+            let correctChoice = KEY[i];
+
+            doc.setLineWidth(0.1);
+            if (userChoice == b) {
+                // Fill bubble: Green if right, Red if wrong
+                if (userChoice == correctChoice) doc.setFillColor(16, 185, 129);
+                else doc.setFillColor(244, 63, 94);
+                doc.circle(bx, by, 1.4, 'F');
+            } else if (correctChoice == b && userChoice !== null) {
+                // Outline correct answer if user got it wrong
+                doc.setDrawColor(16, 185, 129);
+                doc.circle(bx, by, 1.4, 'D');
+            } else {
+                // Empty bubble
+                doc.setDrawColor(226, 232, 240);
+                doc.circle(bx, by, 1.4, 'D');
+            }
         }
-    </script>
-</body>
-</html>
+    }
+
+    // --- FOOTER ---
+    doc.setFontSize(8); doc.setTextColor(203, 213, 225);
+    doc.text("Generated by NEET STRIDE PRO - Digital OMR Evaluator", 105, 285, { align: "center" });
+
+    // --- SMART DOWNLOAD TRIGGER ---
+    const pdfBlob = doc.output('blob');
+    const url = URL.createObjectURL(pdfBlob);
+    
+    // For iPad/Brave: Opens in new tab so user can "Save to Files"
+    const newTab = window.open(url, '_blank');
+    if (!newTab) {
+        // Fallback for popup blockers
+        doc.save(`${name}_NEET_Analysis.pdf`);
+    }
+}
