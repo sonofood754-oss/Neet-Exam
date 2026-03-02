@@ -3,254 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEET STRIDE PRO | Official Evaluator</title>
+    <title>NEET STRIDE PRO | Elite Evaluator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <style>
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .timer-low { animation: pulse-red 1s infinite; color: #f43f5e !important; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        body { -webkit-tap-highlight-color: transparent; }
+        :root { --primary: #4f46e5; --success: #10b981; --danger: #f43f5e; }
+        body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        .omr-bubble { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .omr-bubble:active { transform: scale(0.85); }
+        .glass-morphism { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.05); }
+        .subject-card { border-left: 4px solid var(--primary); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-results { animation: slideUp 0.5s ease-out forwards; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-900 pb-80">
+<body class="bg-[#f8fafc] min-h-screen pb-40">
 
-    <div id="startOverlay" class="fixed inset-0 z-[200] bg-indigo-950 flex items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-[2.5rem] max-w-md w-full text-center shadow-2xl">
-            <h1 class="text-3xl font-black text-indigo-900 mb-2">NEET STRIDE PRO</h1>
-            <p class="text-slate-500 text-sm mb-6">3 Hour Timed Session. Ensure your Answer Key is ready before starting.</p>
-            <button onclick="startExamNow()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xl shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">START EXAM</button>
+    <div id="startOverlay" class="fixed inset-0 z-[1000] bg-slate-900 flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full shadow-2xl text-center">
+            <div class="w-20 h-20 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span class="text-4xl">🎯</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-800 mb-2">NEET STRIDE <span class="text-indigo-600">PRO</span></h1>
+            <p class="text-slate-500 mb-8 text-sm">Professional OMR Evaluation System. <br>3 Hours • 180 Questions • +4/-1 Marking</p>
+            <button onclick="launchApp()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-xl hover:bg-indigo-700 shadow-xl shadow-indigo-200">INITIALIZE EXAM</button>
         </div>
     </div>
 
-    <header class="bg-indigo-950 text-white p-5 shadow-xl sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <h1 class="text-xl font-black italic tracking-tighter">NEET STRIDE <span class="text-indigo-400">PRO</span></h1>
-                <div id="timerDisplay" class="bg-indigo-900 px-4 py-1 rounded-full font-mono font-bold text-indigo-300 border border-indigo-700">03:00:00</div>
+    <nav class="sticky top-0 z-50 bg-slate-900 text-white p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-widest text-indigo-400 font-bold">Live Session</span>
+                <span id="timerDisplay" class="font-mono text-2xl font-bold">03:00:00</span>
             </div>
-            <div class="flex items-center gap-3">
-                <input type="text" id="studentName" placeholder="Student Name" class="bg-indigo-900 border border-indigo-700 text-white px-3 py-2 rounded-xl text-xs w-32 outline-none">
-                <button onclick="window.location.reload()" class="bg-rose-600 px-4 py-2 rounded-xl font-bold text-[10px] shadow-lg active:scale-95">RESET</button>
+            <div class="flex gap-2">
+                <button onclick="window.location.reload()" class="bg-slate-800 p-2 rounded-xl text-xs px-4 border border-slate-700">Reset</button>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="max-w-7xl mx-auto px-4 mt-8">
-        <section class="mb-10 bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label class="block text-xs font-black uppercase text-indigo-900">Scan Printed Key</label>
-                    <input type="file" id="imageInput" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-bold">
-                    <button id="ocrBtn" onclick="parseImage()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-md">SCAN IMAGE</button>
+    <main class="max-w-6xl mx-auto p-4 pt-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+            <div class="lg:col-span-2 space-y-4">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 subject-card">
+                    <label class="block text-xs font-black text-slate-400 uppercase mb-2">Student Details</label>
+                    <input type="text" id="nameInp" placeholder="Enter Full Name" class="w-full text-lg font-bold border-none outline-none focus:ring-0 placeholder:text-slate-300">
                 </div>
-                <div class="space-y-2 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
-                    <label class="block text-xs font-black uppercase text-slate-500">Manual Key String</label>
-                    <textarea id="textInput" class="w-full h-10 p-2 border border-slate-200 rounded-xl text-xs outline-none" placeholder="Paste 180 digits..."></textarea>
-                    <button onclick="parseText()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs shadow-md">LOCK KEY</button>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <label class="block text-xs font-black text-slate-400 uppercase mb-2">Answer Key (Paste 180 Digits)</label>
+                    <textarea id="keyInp" class="w-full h-24 bg-slate-50 rounded-2xl p-4 text-xs font-mono border-none focus:ring-2 focus:ring-indigo-500" placeholder="Example: 12341234..."></textarea>
+                    <button onclick="lockKey()" id="lockBtn" class="mt-4 w-full bg-slate-800 text-white py-3 rounded-xl font-bold text-sm tracking-wide">LOCK KEY ENGINE</button>
                 </div>
             </div>
-        </section>
 
-        <div class="flex flex-col items-center gap-4 mb-12">
-            <button id="submitBtn" onclick="submitExam()" class="bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-2xl hover:bg-indigo-700 active:scale-95 transition-all">FINISH & EVALUATE</button>
-            <button id="downloadBtn" onclick="generatePDF()" class="hidden bg-emerald-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-xl hover:bg-emerald-700 flex items-center gap-2">📥 DOWNLOAD REPORT</button>
+            <div class="bg-indigo-600 rounded-[2rem] p-8 text-white flex flex-col justify-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-4xl font-black mb-2">Submit</h3>
+                    <p class="text-indigo-100 text-sm mb-6">Confirm and evaluate all 180 responses instantly.</p>
+                    <button onclick="processFinal()" id="finalSubmit" class="w-full bg-white text-indigo-600 py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all">FINISH EXAM</button>
+                    <button onclick="exportPDF()" id="pdfBtn" style="display:none" class="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-lg shadow-xl flex items-center justify-center gap-2"><span>📥</span> DOWNLOAD PDF</button>
+                </div>
+                <div class="absolute -right-10 -bottom-10 text-[10rem] opacity-10 font-black">720</div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="omrGrid"></div>
+        <div id="omrContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            </div>
     </main>
 
-    <div id="scoreBoard" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl glass border-t-4 border-indigo-600 rounded-[2.5rem] shadow-2xl p-6 z-40 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="grid grid-cols-3 gap-4 flex-1 w-full text-center">
-            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                <p class="text-[9px] font-black text-indigo-600 uppercase">Physics</p>
-                <p id="resPhy" class="text-2xl font-black">0</p>
-                <p id="statsPhy" class="text-[8px] text-slate-400 font-bold uppercase">M:0 | U:45</p>
+    <div id="resBar" class="fixed bottom-0 left-0 right-0 glass-morphism p-6 translate-y-full transition-transform duration-500 z-[100]">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex gap-8 text-center">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Physics</p>
+                    <p id="p_score" class="text-2xl font-black text-slate-800">0</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Chemistry</p>
+                    <p id="c_score" class="text-2xl font-black text-slate-800">0</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Biology</p>
+                    <p id="b_score" class="text-2xl font-black text-slate-800">0</p>
+                </div>
             </div>
-            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                <p class="text-[9px] font-black text-indigo-600 uppercase">Chemistry</p>
-                <p id="resChem" class="text-2xl font-black">0</p>
-                <p id="statsChem" class="text-[8px] text-slate-400 font-bold uppercase">M:0 | U:45</p>
+            <div class="h-16 w-[2px] bg-slate-100 hidden md:block"></div>
+            <div class="text-center md:text-right">
+                <p class="text-sm font-bold text-indigo-600 uppercase tracking-tighter">Grand Merit Score</p>
+                <div class="flex items-baseline justify-center md:justify-end gap-1">
+                    <span id="total_score" class="text-6xl font-black text-slate-900 leading-none">0</span>
+                    <span class="text-slate-300 font-bold">/720</span>
+                </div>
             </div>
-            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                <p class="text-[9px] font-black text-indigo-600 uppercase">Biology</p>
-                <p id="resBio" class="text-2xl font-black">0</p>
-                <p id="statsBio" class="text-[8px] text-slate-400 font-bold uppercase">M:0 | U:90</p>
-            </div>
-        </div>
-        <div class="text-center md:pl-6 md:border-l-2 border-slate-100">
-            <p class="text-[9px] font-black text-slate-400 uppercase">Grand Total</p>
-            <p id="resTotal" class="text-5xl font-black text-indigo-700 leading-none">0</p>
-            <p class="text-[10px] font-bold text-slate-300">/ 720</p>
         </div>
     </div>
 
     <script>
-        let masterKey = [], userSel = new Array(180).fill(null), isDone = false;
-        let timeLeft = 3 * 60 * 60; 
+        let KEY = [], ANS = new Array(180).fill(null), FINISHED = false;
+        let SECONDS = 10800;
 
-        function startExamNow() {
+        function launchApp() {
             document.getElementById('startOverlay').style.display = 'none';
-            const timerInterval = setInterval(() => {
-                if (isDone) { clearInterval(timerInterval); return; }
-                timeLeft--;
-                let h = Math.floor(timeLeft / 3600);
-                let m = Math.floor((timeLeft % 3600) / 60);
-                let s = timeLeft % 60;
-                const display = document.getElementById('timerDisplay');
-                display.innerText = `${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-                if (timeLeft < 300) display.classList.add('timer-low');
-                if (timeLeft <= 0) { clearInterval(timerInterval); submitExam(); }
+            initGrid();
+            const timer = setInterval(() => {
+                if(FINISHED || SECONDS <= 0) return clearInterval(timer);
+                SECONDS--;
+                let h=Math.floor(SECONDS/3600), m=Math.floor((SECONDS%3600)/60), s=SECONDS%60;
+                document.getElementById('timerDisplay').innerText = 
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             }, 1000);
         }
 
-        function init() {
-            const grid = document.getElementById('omrGrid');
-            const subjects = [
-                { name: "Physics (1-45)", range: [1, 45] },
-                { name: "Chemistry (46-90)", range: [46, 90] },
-                { name: "Biology I (91-135)", range: [91, 135] },
-                { name: "Biology II (136-180)", range: [136, 180] }
+        function initGrid() {
+            const container = document.getElementById('omrContainer');
+            const sections = [
+                { name: "Physics", start: 1, end: 45 },
+                { name: "Chemistry", start: 46, end: 90 },
+                { name: "Biology I", start: 91, end: 135 },
+                { name: "Biology II", start: 136, end: 180 }
             ];
-            subjects.forEach(sub => {
-                const col = document.createElement('div');
-                col.className = "space-y-1";
-                col.innerHTML = `<div class="bg-indigo-50 text-indigo-700 p-2 rounded-xl text-center font-black text-[10px] uppercase border border-indigo-100">${sub.name}</div>`;
-                for (let i = sub.range[0]; i <= sub.range[1]; i++) {
+
+            sections.forEach(sec => {
+                const wrap = document.createElement('div');
+                wrap.className = "bg-white p-4 rounded-[2rem] shadow-sm border border-slate-100";
+                wrap.innerHTML = `<h4 class="text-center font-black text-indigo-600 text-xs mb-4 uppercase tracking-widest">${sec.name}</h4>`;
+                
+                for(let i=sec.start; i<=sec.end; i++) {
                     const row = document.createElement('div');
-                    row.className = "flex items-center justify-between p-2 bg-white rounded-xl border border-slate-100 shadow-sm";
+                    row.className = "flex items-center justify-between mb-2 group";
                     row.innerHTML = `
-                        <span class="text-[10px] font-black text-slate-300 w-5">${i}</span>
-                        <div class="flex gap-1">
-                            ${[1,2,3,4].map(n => `<button onclick="selectBubble(${i},'${n}',this)" class="w-7 h-7 rounded-lg border-2 border-slate-100 text-[10px] font-bold text-slate-400 hover:border-indigo-200 transition-all">${n}</button>`).join('')}
-                        </div>`;
-                    col.appendChild(row);
+                        <span class="text-[10px] font-bold text-slate-300 w-6">${i}</span>
+                        <div class="flex gap-1" data-q="${i}">
+                            ${[1,2,3,4].map(n => `
+                                <button onclick="handleBubble(${i},${n},this)" 
+                                    class="omr-bubble w-9 h-9 rounded-xl border-2 border-slate-50 bg-slate-50 text-slate-400 font-bold text-xs flex items-center justify-center">
+                                    ${n}
+                                </button>
+                            `).join('')}
+                        </div>
+                    `;
+                    wrap.appendChild(row);
                 }
-                grid.appendChild(col);
+                container.appendChild(wrap);
             });
         }
 
-        function selectBubble(q, val, btn) {
-            if (isDone) return;
-            const idx = q - 1, row = btn.parentElement, btns = row.querySelectorAll('button');
-            if (userSel[idx] === val) {
-                btn.className = "w-7 h-7 rounded-lg border-2 border-slate-100 text-[10px] font-bold text-slate-400 transition-all";
-                userSel[idx] = null;
+        function handleBubble(q, v, btn) {
+            if(FINISHED) return;
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('button');
+            
+            if(ANS[q-1] === v) {
+                ANS[q-1] = null;
+                btn.className = "omr-bubble w-9 h-9 rounded-xl border-2 border-slate-50 bg-slate-50 text-slate-400 font-bold text-xs flex items-center justify-center";
             } else {
-                btns.forEach(b => b.className = "w-7 h-7 rounded-lg border-2 border-slate-100 text-[10px] font-bold text-slate-400 transition-all");
-                btn.className = "w-7 h-7 rounded-lg border-2 border-indigo-600 bg-indigo-600 text-white text-[10px] font-bold shadow-md transition-all scale-110";
-                userSel[idx] = val;
+                buttons.forEach(b => b.className = "omr-bubble w-9 h-9 rounded-xl border-2 border-slate-50 bg-slate-50 text-slate-400 font-bold text-xs flex items-center justify-center");
+                ANS[q-1] = v;
+                btn.className = "omr-bubble w-9 h-9 rounded-xl border-2 border-indigo-600 bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-lg shadow-indigo-100";
             }
         }
 
-        function parseText() {
-            const val = document.getElementById('textInput').value;
-            masterKey = val.match(/[1-4]/g) || [];
-            if (masterKey.length >= 180) alert("Master Key Locked!");
-            else alert("Error: Found " + masterKey.length + " answers.");
-        }
-
-        async function parseImage() {
-            const file = document.getElementById('imageInput').files[0];
-            if (!file) return alert("Select an image first.");
-            const btn = document.getElementById('ocrBtn'); btn.innerText = "SCANNING...";
-            const worker = await Tesseract.createWorker('eng');
-            const { data: { text } } = await worker.recognize(file);
-            let all = text.match(/\d+/g) || [], filtered = [];
-            for (let i = 0; i < all.length; i++) {
-                let n = parseInt(all[i]);
-                if (n >= 1 && n <= 180 && ["1","2","3","4"].includes(all[i+1])) { filtered[n-1] = all[i+1]; i++; }
+        function lockKey() {
+            const raw = document.getElementById('keyInp').value;
+            KEY = raw.match(/[1-4]/g) || [];
+            if(KEY.length >= 180) {
+                document.getElementById('lockBtn').innerText = "✅ ENGINE READY";
+                document.getElementById('lockBtn').className = "mt-4 w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-sm";
+                alert("Master Answer Key Loaded Successfully.");
+            } else {
+                alert(`Error: Need 180 answers, but only found ${KEY.length}. Check your text.`);
             }
-            masterKey = filtered; alert("Scan Complete!"); await worker.terminate(); btn.innerText = "SCAN IMAGE";
         }
 
-        function submitExam() {
-            if (masterKey.length < 180) return alert("Setup the Answer Key first!");
-            isDone = true;
-            document.getElementById('submitBtn').classList.add('hidden');
-            document.getElementById('downloadBtn').classList.remove('hidden');
-            document.getElementById('scoreBoard').classList.remove('hidden');
+        function processFinal() {
+            if(KEY.length < 180) return alert("System cannot evaluate without a 180-digit Master Key.");
+            FINISHED = true;
+            
+            // UI Switches
+            document.getElementById('finalSubmit').style.display = 'none';
+            document.getElementById('pdfBtn').style.display = 'flex';
+            document.getElementById('resBar').classList.remove('translate-y-full');
 
-            for (let i = 0; i < 180; i++) {
-                const qNum = i + 1, s = userSel[i], c = masterKey[i];
-                const bubbles = document.querySelectorAll(`button[onclick*="selectBubble(${qNum},"]`);
-                bubbles.forEach(b => {
-                    const bVal = b.innerText;
-                    if (bVal === s) {
-                        b.style.backgroundColor = (s === c) ? "#10b981" : "#f43f5e";
-                        b.style.borderColor = (s === c) ? "#10b981" : "#f43f5e";
-                        b.style.color = "white";
-                    } else if (bVal === c && s !== null) {
-                        b.style.border = "2px dashed #10b981"; b.style.color = "#10b981";
+            let p=0, c=0, b=0;
+            ANS.forEach((val, i) => {
+                let points = 0;
+                if(val == KEY[i]) points = 4;
+                else if(val !== null) points = -1;
+
+                if(i < 45) p += points;
+                else if(i < 90) c += points;
+                else b += points;
+
+                // Visual Feedback on Grid
+                const bubbles = document.querySelectorAll(`[data-q="${i+1}"] button`);
+                bubbles.forEach(btn => {
+                    const bv = parseInt(btn.innerText);
+                    if(val == bv) {
+                        btn.style.background = (val == KEY[i]) ? '#10b981' : '#f43f5e';
+                        btn.style.borderColor = (val == KEY[i]) ? '#10b981' : '#f43f5e';
+                        btn.style.color = 'white';
+                    } else if(bv == KEY[i] && val !== null) {
+                        btn.style.borderColor = '#10b981';
+                        btn.style.color = '#10b981';
+                        btn.style.borderStyle = 'dashed';
                     }
                 });
-            }
-            updateUI();
+            });
+
+            document.getElementById('p_score').innerText = p;
+            document.getElementById('c_score').innerText = c;
+            document.getElementById('b_score').innerText = b;
+            document.getElementById('total_score').innerText = p+c+b;
         }
 
-        function updateUI() {
-            let s = { phy: { p: 0, m: 0, u: 0, c: 0 }, chem: { p: 0, m: 0, u: 0, c: 0 }, bio: { p: 0, m: 0, u: 0, c: 0 } };
-            userSel.forEach((val, i) => {
-                let cat = i < 45 ? 'phy' : (i < 90 ? 'chem' : 'bio');
-                if (val === masterKey[i]) { s[cat].p += 4; s[cat].c++; }
-                else if (val === null) { s[cat].u++; }
-                else { s[cat].p -= 1; s[cat].m++; }
-            });
-            ['Phy', 'Chem', 'Bio'].forEach(k => {
-                const low = k.toLowerCase();
-                document.getElementById('res'+k).innerText = s[low].p;
-                document.getElementById('stats'+k).innerText = `M:${s[low].m} | U:${s[low].u}`;
-            });
-            document.getElementById('resTotal').innerText = s.phy.p + s.chem.p + s.bio.p;
-            return s;
-        }
-
-        function generatePDF() {
+        async function exportPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const name = document.getElementById('studentName').value || "Candidate";
-            const stats = updateUI();
-            const total = document.getElementById('resTotal').innerText;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const name = document.getElementById('nameInp').value || "Candidate";
+            const score = document.getElementById('total_score').innerText;
 
-            doc.setFillColor(30, 27, 75); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET PERFORMANCE REPORT", 15, 20);
-            doc.setFontSize(10); doc.text(`STUDENT: ${name.toUpperCase()} | SCORE: ${total}/720`, 15, 33);
+            // Premium PDF Styling
+            doc.setFillColor(30, 41, 59);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text("NEET PERFORMANCE REPORT", 15, 20);
+            doc.setFontSize(10);
+            doc.text(`STUDENT: ${name.toUpperCase()} | TOTAL SCORE: ${score}/720`, 15, 30);
 
-            doc.setFillColor(245, 247, 250); doc.rect(15, 52, 180, 25, 'F');
-            doc.setTextColor(0); doc.setFontSize(9);
-            doc.text("SUBJECT", 20, 58); doc.text("SCORE", 70, 58); doc.text("CORRECT", 100, 58); doc.text("MISTAKES", 135, 58); doc.text("SKIPPED", 170, 58);
-            
+            doc.setTextColor(30, 41, 59);
+            doc.text("Evaluated via NEET STRIDE PRO Engine", 15, 50);
+
+            // Detailed Subject Breakdown
+            const subjects = [
+                { s: "Physics", r: document.getElementById('p_score').innerText },
+                { s: "Chemistry", r: document.getElementById('c_score').innerText },
+                { s: "Biology", r: document.getElementById('b_score').innerText }
+            ];
+
             let y = 65;
-            [['Physics', stats.phy], ['Chemistry', stats.chem], ['Biology', stats.bio]].forEach(row => {
-                doc.text(row[0], 20, y); doc.text(row[1].p.toString(), 70, y); doc.text(row[1].c.toString(), 100, y); doc.text(row[1].m.toString(), 135, y); doc.text(row[1].u.toString(), 170, y);
-                y += 5;
+            subjects.forEach(sub => {
+                doc.setFillColor(248, 250, 252);
+                doc.rect(15, y, 180, 15, 'F');
+                doc.setFontSize(11);
+                doc.text(sub.s, 20, y + 10);
+                doc.text(sub.r + " Marks", 170, y + 10);
+                y += 20;
             });
 
-            let yGrid = 90;
-            for (let i = 0; i < 180; i++) {
-                let col = Math.floor(i/45), row = i%45, x = 15+(col*46), yPos = yGrid+(row*4);
-                doc.setFontSize(5); doc.setTextColor(180); doc.text(`${i+1}`, x, yPos);
-                for (let b = 1; b <= 4; b++) {
-                    let bx = x+6+(b*5), sel = userSel[i], cor = masterKey[i];
-                    if (sel == b) { doc.setFillColor(sel == cor ? [16,185,129] : [244,63,94]); doc.circle(bx, yPos-1, 1.2, 'F'); }
-                    else if (cor == b && sel !== null) { doc.setDrawColor(16,185,129); doc.circle(bx, yPos-1, 1.2, 'D'); }
-                    else { doc.setDrawColor(220); doc.circle(bx, yPos-1, 1.2, 'D'); }
-                }
-            }
-
-            const pdfBlob = doc.output('blob');
-            const url = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${name}_NEET_Analysis.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setTimeout(() => { if (!link.clicked) window.open(url, '_blank'); }, 500);
+            // iPad & Brave Browser Direct View Trigger
+            const pdfOutput = doc.output('blob');
+            const blobUrl = URL.createObjectURL(pdfOutput);
+            window.open(blobUrl, '_blank');
         }
-
-        init(); // <--- THE POWER BUTTON
     </script>
 </body>
 </html>
