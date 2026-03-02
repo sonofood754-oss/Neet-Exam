@@ -3,422 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEET STRIDE PRO | Forensic Ultra Edition</title>
+    <title>NEET STRIDE PRO | Final Audit</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        :root {
-            --indigo-main: #4f46e5;
-            --emerald-vibrant: #10b981;
-            --rose-danger: #f43f5e;
-            --slate-bg: #f1f5f9;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&display=swap');
+        
         body {
-            -webkit-tap-highlight-color: transparent;
-            scroll-behavior: smooth;
-            background-color: var(--slate-bg);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            overflow-x: hidden;
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Outfit', sans-serif;
         }
 
-        /* Smooth Glass UI */
-        .glass-header {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        .neo-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 2rem;
         }
 
-        .omr-card {
-            background: white;
-            border-radius: 2.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        /* Bubble States */
         .bubble {
-            width: 38px;
-            height: 38px;
-            border: 2px solid #e2e8f0;
-            background: #f8fafc;
-            color: #94a3b8;
-            font-weight: 800;
-            font-size: 0.75rem;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #334155;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 900;
+            font-size: 0.75rem;
         }
 
         .bubble.selected {
-            background: var(--indigo-main);
-            border-color: var(--indigo-main);
-            color: white;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            background: #6366f1;
+            border-color: #6366f1;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
             transform: scale(1.1);
         }
 
-        /* Results HUD Animation */
-        .results-slide-up {
-            transform: translateY(100%);
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .results-active {
-            transform: translateY(0);
-        }
-
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        .correct-pulse {
-            animation: pulse-green 2s infinite;
+        @media (max-width: 640px) {
+            .bubble { width: 34px; height: 34px; border-radius: 8px; }
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-    <div id="introOverlay" class="fixed inset-0 z-[2000] bg-slate-900 flex items-center justify-center p-6 text-center">
-        <div class="max-w-md w-full animate-in fade-in zoom-in duration-500">
-            <div class="bg-white rounded-[3rem] p-10 shadow-2xl">
-                <div class="w-24 h-24 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-5xl">🧬</div>
-                <h1 class="text-4xl font-black text-slate-800 mb-2">NEET STRIDE <span class="text-indigo-600">PRO</span></h1>
-                <p class="text-slate-400 font-medium mb-8 leading-relaxed">Forensic Evaluation Engine v4.0<br>Certified for Android & iOS Results</p>
-                <button onclick="initApp()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black text-xl shadow-xl hover:bg-indigo-700 active:scale-95 transition-all">INITIALIZE EXAM</button>
-            </div>
+    <header class="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+            <h1 class="text-4xl font-black italic tracking-tighter">STRIDE<span class="text-indigo-500">PRO</span></h1>
+            <p class="text-slate-500 text-[10px] uppercase tracking-[0.3em]">Advanced Forensic Audit v4.2</p>
         </div>
-    </div>
-
-    <nav class="sticky top-0 z-[100] glass-header text-white px-6 py-4 flex justify-between items-center shadow-2xl">
-        <div class="flex items-center gap-4">
-            <div class="h-10 w-1.5 bg-indigo-500 rounded-full"></div>
-            <div>
-                <span id="timer" class="block font-mono text-3xl font-bold leading-none text-indigo-400">03:00:00</span>
-                <span class="text-[9px] uppercase tracking-widest font-black text-slate-500">Forensic Live Stream</span>
-            </div>
+        <div class="bg-slate-800/50 px-6 py-3 rounded-2xl border border-white/5">
+            <span id="timer" class="text-2xl font-black text-indigo-400 font-mono">03:00:00</span>
         </div>
-        <button onclick="location.reload()" class="bg-white/5 hover:bg-rose-500/20 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-tighter border border-white/10 transition-all">Emergency Reset</button>
-    </nav>
+    </header>
 
-    <main class="max-w-[1400px] mx-auto p-4 md:p-8 pt-10">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
-            <div class="lg:col-span-8 space-y-6">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 block">Candidate Identity</label>
-                    <input type="text" id="userName" placeholder="Enter Full Name" class="w-full text-2xl font-bold outline-none border-b-4 border-slate-100 focus:border-indigo-600 py-2 transition-all">
-                </div>
-                
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200">
-                    <div class="flex justify-between items-center mb-4">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Master Answer Key</label>
-                        <span id="keyStatus" class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-bold">UNSYNCED</span>
-                    </div>
-                    <textarea id="masterKey" class="w-full h-24 bg-slate-50 rounded-2xl p-4 text-sm font-mono focus:ring-2 focus:ring-indigo-600 outline-none resize-none" placeholder="Paste 180 digits..."></textarea>
-                    <button onclick="lockSystem()" id="lockBtn" class="mt-4 w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-sm tracking-widest active:scale-95 transition-all">SYNC FORENSIC ENGINE</button>
-                </div>
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section class="space-y-6">
+            <div class="neo-card p-6">
+                <input type="text" id="userName" placeholder="Student Name" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-3 outline-none focus:border-indigo-500 transition-all">
             </div>
 
-            <div class="lg:col-span-4">
-                <div class="bg-indigo-600 rounded-[3rem] p-10 text-white h-full flex flex-col justify-between shadow-2xl relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 class="text-4xl font-black mb-4 leading-tight">Final Evaluation</h3>
-                        <p class="text-indigo-100 text-sm leading-relaxed opacity-80">Submit your 180 responses for forensic grading. Analysis will be generated instantly.</p>
-                    </div>
-
-                    <div class="relative z-10 mt-10">
-                        <button onclick="submitExam()" id="submitBtn" class="w-full bg-white text-indigo-600 py-6 rounded-3xl font-black text-xl shadow-xl active:scale-95 transition-all">FINISH EXAM</button>
-                        
-                        <div id="pdfDownloadArea" style="display:none" class="space-y-4">
-                            <button onclick="generateForensicPDF()" class="w-full bg-emerald-500 text-white py-6 rounded-3xl font-black text-xl shadow-xl flex items-center justify-center gap-3 animate-bounce">
-                                <span>📥</span> DOWNLOAD REPORT
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="absolute -right-8 -bottom-8 text-[12rem] opacity-10 font-black italic select-none">720</div>
+            <div class="neo-card p-6">
+                <div class="flex justify-between mb-3">
+                    <span class="text-[10px] font-bold text-slate-500">ANSWER KEY (180 DIGITS)</span>
+                    <span id="syncStatus" class="text-[10px] font-bold text-rose-500">OFFLINE</span>
                 </div>
-            </div>
-        </div>
-
-        <div id="omrGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 opacity-0 transition-opacity duration-1000 pb-40">
+                <textarea id="masterKey" class="w-full h-24 bg-slate-900/50 border border-slate-700 rounded-xl p-3 font-mono text-xs mb-4 resize-none outline-none" placeholder="Paste here..."></textarea>
+                <button onclick="syncEngine()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-black transition-all">SYNC KEY</button>
             </div>
 
+            <div id="actionArea" class="hidden">
+                <button onclick="calculateScore()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-5 rounded-2xl font-black text-lg transition-all shadow-lg shadow-emerald-500/20">SUBMIT EXAM</button>
+            </div>
+            
+            <div id="pdfArea" class="hidden">
+                <button onclick="generatePDF()" class="w-full bg-white text-slate-900 py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-2">
+                    📥 DOWNLOAD REPORT
+                </button>
+            </div>
+        </section>
+
+        <section id="omrGrid" class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            </section>
     </main>
 
-    <div id="resultsBar" class="fixed bottom-0 left-0 right-0 glass-header p-10 results-slide-up z-[500] rounded-t-[4rem]">
-        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-10">
-            <div class="grid grid-cols-3 gap-6 w-full lg:w-auto">
-                <div class="bg-white/5 p-6 rounded-3xl border border-white/10 text-center">
-                    <p class="text-[10px] font-black text-indigo-400 uppercase mb-1">Physics</p>
-                    <p id="pScore" class="text-3xl font-black text-white">0</p>
-                </div>
-                <div class="bg-white/5 p-6 rounded-3xl border border-white/10 text-center">
-                    <p class="text-[10px] font-black text-indigo-400 uppercase mb-1">Chemistry</p>
-                    <p id="cScore" class="text-3xl font-black text-white">0</p>
-                </div>
-                <div class="bg-white/5 p-6 rounded-3xl border border-white/10 text-center">
-                    <p class="text-[10px] font-black text-indigo-400 uppercase mb-1">Biology</p>
-                    <p id="bScore" class="text-3xl font-black text-white">0</p>
-                </div>
+    <div id="scoreHud" class="fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-white/10 p-6 translate-y-full transition-transform duration-500 z-[100]">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex gap-4">
+                <div class="text-center"><p class="text-[10px] text-slate-500 font-bold">PHY</p><p id="resP" class="font-black text-xl">0</p></div>
+                <div class="text-center"><p class="text-[10px] text-slate-500 font-bold">CHE</p><p id="resC" class="font-black text-xl">0</p></div>
+                <div class="text-center"><p class="text-[10px] text-slate-500 font-bold">BIO</p><p id="resB" class="font-black text-xl">0</p></div>
             </div>
-
-            <div class="text-center lg:text-right">
-                <p class="text-xs font-black text-indigo-400 uppercase tracking-[0.3em] mb-2">Total Forensic Score</p>
-                <div class="flex items-baseline justify-center lg:justify-end gap-3">
-                    <span id="totalScore" class="text-8xl font-black text-white tracking-tighter">0</span>
-                    <span class="text-indigo-500 font-black text-3xl italic">/720</span>
-                </div>
+            <div class="text-right">
+                <span class="text-4xl font-black" id="resTotal">0</span>
+                <span class="text-indigo-500 font-bold">/720</span>
             </div>
         </div>
     </div>
 
     <script>
-        // GLOBAL ENGINE STATE
         let MASTER_KEY = [];
-        let STUDENT_ANSWERS = new Array(180).fill(null);
-        let IS_FINISHED = false;
-        let TIME_LEFT = 10800; // 3 Hours
+        let STUDENT_ANS = new Array(180).fill(null);
+        let IS_LOCKED = false;
 
-        // 1. INITIALIZE APP
-        function initApp() {
-            document.getElementById('introOverlay').style.display = 'none';
-            buildOMRGrid();
-            document.getElementById('omrGrid').classList.remove('opacity-0');
+        function init() {
+            const grid = document.getElementById('omrGrid');
+            const sections = [
+                {name: "Physics (1-45)", range: [1, 45]},
+                {name: "Chemistry (46-90)", range: [46, 90]},
+                {name: "Biology (91-180)", range: [91, 180]}
+            ];
+
+            sections.forEach(s => {
+                let html = `<div class="neo-card p-4"><h3 class="text-xs font-bold text-indigo-400 mb-4 uppercase tracking-widest">${s.name}</h3>`;
+                for(let i = s.range[0]; i <= s.range[1]; i++) {
+                    html += `<div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] text-slate-500 font-mono">${i}</span>
+                        <div class="flex gap-1" data-q="${i}">
+                            ${[1,2,3,4].map(n => `<div onclick="selectBubble(${i}, ${n}, this)" class="bubble rounded-lg">${n}</div>`).join('')}
+                        </div>
+                    </div>`;
+                }
+                grid.innerHTML += html + `</div>`;
+            });
             startTimer();
         }
 
-        // 2. RENDER THE 180-QUESTION GRID (Optimized Loop)
-        function buildOMRGrid() {
-            const grid = document.getElementById('omrGrid');
-            const sections = [
-                { name: "PHYSICS", range: [1, 45] },
-                { name: "CHEMISTRY", range: [46, 90] },
-                { name: "BIOLOGY (BOTANY)", range: [91, 135] },
-                { name: "BIOLOGY (ZOOLOGY)", range: [136, 180] }
-            ];
-
-            sections.forEach(sec => {
-                const card = document.createElement('div');
-                card.className = "omr-card overflow-hidden border border-slate-100";
-                
-                let rowsHtml = `<div class="bg-slate-900 p-4 text-center">
-                                    <h4 class="text-white font-black text-[10px] tracking-[0.3em]">${sec.name}</h4>
-                                </div><div class="p-4 space-y-2">`;
-                
-                for(let i = sec.range[0]; i <= sec.range[1]; i++) {
-                    rowsHtml += `
-                        <div class="flex items-center justify-between px-2 py-1.5 hover:bg-slate-50 rounded-xl transition-colors">
-                            <span class="text-[11px] font-black text-slate-300 w-6 italic">${i}</span>
-                            <div class="flex gap-2" data-question="${i}">
-                                ${[1,2,3,4].map(n => `
-                                    <button onclick="tapBubble(${i}, ${n}, this)" 
-                                            class="bubble">
-                                        ${n}
-                                    </button>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                rowsHtml += `</div>`;
-                card.innerHTML = rowsHtml;
-                grid.appendChild(card);
-            });
+        function selectBubble(q, v, el) {
+            if(IS_LOCKED) return;
+            const row = el.parentElement;
+            row.querySelectorAll('.bubble').forEach(b => b.classList.remove('selected'));
+            if(STUDENT_ANS[q-1] === v) { STUDENT_ANS[q-1] = null; }
+            else { STUDENT_ANS[q-1] = v; el.classList.add('selected'); }
         }
 
-        // 3. SELECTION LOGIC
-        function tapBubble(qIndex, val, element) {
-            if(IS_FINISHED) return;
-            const container = element.parentElement;
-            const buttons = container.querySelectorAll('button');
-
-            if(STUDENT_ANSWERS[qIndex-1] === val) {
-                STUDENT_ANSWERS[qIndex-1] = null;
-                element.classList.remove('selected');
-            } else {
-                buttons.forEach(b => b.classList.remove('selected'));
-                STUDENT_ANSWERS[qIndex-1] = val;
-                element.classList.add('selected');
-            }
-        }
-
-        // 4. LOCK KEY LOGIC
-        function lockSystem() {
-            const input = document.getElementById('masterKey').value;
-            MASTER_KEY = input.match(/[1-4]/g) || [];
-            
+        function syncEngine() {
+            const val = document.getElementById('masterKey').value;
+            MASTER_KEY = val.match(/[1-4]/g) || [];
             if(MASTER_KEY.length >= 180) {
-                const status = document.getElementById('keyStatus');
-                status.innerText = "✅ SYSTEM SYNCED";
-                status.className = "bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold";
-                document.getElementById('lockBtn').innerText = "FORENSIC DATA SECURED";
-                document.getElementById('lockBtn').classList.add('bg-emerald-600');
-                alert("Master Answer Key Synchronized.");
-            } else {
-                alert(`Error: System requires 180 digits. Detected: ${MASTER_KEY.length}`);
-            }
+                document.getElementById('syncStatus').innerText = "SYNCED";
+                document.getElementById('syncStatus').className = "text-[10px] font-bold text-emerald-500";
+                document.getElementById('actionArea').classList.remove('hidden');
+            } else { alert("Key must contain 180 digits (1-4)."); }
         }
 
-        // 5. EVALUATION LOGIC
-        function submitExam() {
-            if(MASTER_KEY.length < 180) return alert("System Error: Load Answer Key before submitting.");
-            if(!confirm("Submit final answers for forensic audit?")) return;
+        function calculateScore() {
+            if(!confirm("Finalize responses?")) return;
+            IS_LOCKED = true;
+            document.getElementById('actionArea').classList.add('hidden');
+            document.getElementById('pdfArea').classList.remove('hidden');
+            document.getElementById('scoreHud').classList.remove('translate-y-full');
 
-            IS_FINISHED = true;
-            document.getElementById('submitBtn').style.display = 'none';
-            document.getElementById('pdfDownloadArea').style.display = 'block';
-            document.getElementById('resultsBar').classList.add('results-active');
-
-            let scores = { p: 0, c: 0, b: 0 };
-            
-            STUDENT_ANSWERS.forEach((ans, i) => {
+            let p=0, c=0, b=0;
+            STUDENT_ANS.forEach((ans, i) => {
                 const correct = parseInt(MASTER_KEY[i]);
-                const points = (ans === correct) ? 4 : (ans === null ? 0 : -1);
-                
-                if(i < 45) scores.p += points;
-                else if(i < 90) scores.c += points;
-                else scores.b += points;
+                const pts = (ans === correct) ? 4 : (ans === null ? 0 : -1);
+                if(i < 45) p += pts; else if(i < 90) c += pts; else b += pts;
 
-                // Visual Feedback on Grid
-                const qNum = i + 1;
-                const bubbles = document.querySelectorAll(`[data-question="${qNum}"] button`);
+                const bubbles = document.querySelectorAll(`[data-q="${i+1}"] .bubble`);
                 bubbles.forEach(btn => {
-                    const btnVal = parseInt(btn.innerText);
-                    if(ans === btnVal) {
-                        btn.style.background = (ans === correct) ? '#10b981' : '#f43f5e';
-                        btn.style.borderColor = (ans === correct) ? '#10b981' : '#f43f5e';
-                        btn.style.color = 'white';
-                    } else if(btnVal === correct && ans !== null) {
-                        btn.style.borderColor = '#10b981';
-                        btn.style.color = '#10b981';
-                        btn.style.borderStyle = 'dashed';
-                    }
+                    const val = parseInt(btn.innerText);
+                    if(ans === val) btn.style.backgroundColor = (ans === correct) ? "#10b981" : "#ef4444";
+                    else if(val === correct && ans !== null) btn.style.border = "2px dashed #10b981";
                 });
             });
-
-            document.getElementById('pScore').innerText = scores.p;
-            document.getElementById('cScore').innerText = scores.c;
-            document.getElementById('bScore').innerText = scores.b;
-            document.getElementById('totalScore').innerText = scores.p + scores.c + scores.b;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('resP').innerText = p;
+            document.getElementById('resC').innerText = c;
+            document.getElementById('resB').innerText = b;
+            document.getElementById('resTotal').innerText = p+c+b;
         }
 
-        // 6. TIMER ENGINE
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt', 'a4');
+            const name = (document.getElementById('userName').value || "Student").toUpperCase();
+            
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 600, 80, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("NEET STRIDE PERFORMANCE REPORT", 40, 45);
+            doc.setFontSize(10); doc.text(`CANDIDATE: ${name}`, 40, 65);
+
+            doc.setTextColor(30, 41, 59); doc.setFontSize(14); doc.text("SUBJECT ANALYTICS", 40, 110);
+            const data = [
+                {n: "Physics", s: document.getElementById('resP').innerText},
+                {n: "Chemistry", s: document.getElementById('resC').innerText},
+                {n: "Biology", s: document.getElementById('resB').innerText}
+            ];
+
+            let y = 130;
+            data.forEach(item => {
+                doc.setFillColor(241, 245, 249); doc.rect(40, y, 515, 30, 'F');
+                doc.setFontSize(10); doc.text(`${item.n}: ${item.s} Marks`, 55, y+18);
+                y += 35;
+            });
+
+            doc.text("OMR VISUAL RECONSTRUCTION", 40, y+20);
+            let sX = 40, sY = y + 50, colW = 130, rowH = 12;
+            for(let i=0; i<180; i++){
+                let col = Math.floor(i/45), row = i%45;
+                let x = sX + (col*colW), yp = sY + (row*rowH);
+                doc.setFontSize(6); doc.setTextColor(180); doc.text(`${i+1}`, x, yp);
+                for(let b=1; b<=4; b++){
+                    let bx = x+20+(b*18), by = yp-2;
+                    if(STUDENT_ANS[i] == b) {
+                        doc.setFillColor(STUDENT_ANS[i] == MASTER_KEY[i] ? 16 : 239, STUDENT_ANS[i] == MASTER_KEY[i] ? 185 : 68, STUDENT_ANS[i] == MASTER_KEY[i] ? 129 : 68);
+                        doc.circle(bx, by, 4, 'F');
+                    } else if(MASTER_KEY[i] == b && STUDENT_ANS[i] !== null) {
+                        doc.setDrawColor(16, 185, 129); doc.circle(bx, by, 4, 'D');
+                    } else {
+                        doc.setDrawColor(220); doc.circle(bx, by, 4, 'D');
+                    }
+                }
+            }
+            doc.save(`NEET_Report_${name}.pdf`);
+        }
+
         function startTimer() {
-            const timerDisplay = document.getElementById('timer');
-            const clock = setInterval(() => {
-                if(IS_FINISHED || TIME_LEFT <= 0) return clearInterval(clock);
-                TIME_LEFT--;
-                let h = Math.floor(TIME_LEFT / 3600);
-                let m = Math.floor((TIME_LEFT % 3600) / 60);
-                let s = TIME_LEFT % 60;
-                timerDisplay.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            let t = 10800;
+            setInterval(() => {
+                if(IS_LOCKED) return;
+                t--;
+                let h=Math.floor(t/3600), m=Math.floor((t%3600)/60), s=t%60;
+                document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             }, 1000);
         }
 
-        // 7. MULTI-FAILSAFE PDF GENERATOR (The Android/iPad Fix)
-                function generateForensicPDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                // Use 'pt' instead of 'mm' for better mobile precision
-                const doc = new jsPDF('p', 'pt', 'a4');
-                const name = (document.getElementById('userName').value || "CANDIDATE").toUpperCase();
-                const total = document.getElementById('totalScore').innerText;
-
-                // 1. Header with Solid Colors
-                doc.setFillColor(15, 23, 42); 
-                doc.rect(0, 0, 600, 120, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(24);
-                doc.text("NEET FORENSIC AUDIT", 40, 60);
-                doc.setFontSize(12);
-                doc.text(`CANDIDATE: ${name} | TOTAL SCORE: ${total}/720`, 40, 90);
-
-                // 2. Sectional Audit
-                doc.setTextColor(40, 40, 40);
-                doc.setFontSize(14);
-                doc.text("PERFORMANCE SUMMARY", 40, 160);
-                
-                let y = 180;
-                const stats = [
-                    {label: "Physics", score: document.getElementById('pScore').innerText},
-                    {label: "Chemistry", score: document.getElementById('cScore').innerText},
-                    {label: "Biology", score: document.getElementById('bScore').innerText}
-                ];
-
-                stats.forEach(item => {
-                    doc.setFillColor(245, 247, 250);
-                    doc.roundedRect(40, y, 515, 30, 5, 5, 'F');
-                    doc.setFontSize(11);
-                    doc.text(item.label, 60, y + 20);
-                    doc.text(item.score + " Marks", 480, y + 20);
-                    y += 40;
-                });
-
-                // 3. Visual OMR Grid
-                doc.setFontSize(14);
-                doc.text("OMR RECONSTRUCTION", 40, y + 20);
-                
-                let startX = 40, startY = y + 50, colW = 130, rowH = 12;
-
-                for(let i = 0; i < 180; i++) {
-                    let col = Math.floor(i / 45);
-                    let row = i % 45;
-                    let x = startX + (col * colW);
-                    let yp = startY + (row * rowH);
-
-                    // Question Number
-                    doc.setTextColor(180, 180, 180);
-                    doc.setFontSize(6);
-                    doc.text(`${i + 1}`, x, yp);
-
-                    // Bubbles
-                    for(let b = 1; b <= 4; b++) {
-                        let bx = x + 20 + (b * 18);
-                        let by = yp - 2;
-                        
-                        // Default Gray
-                        doc.setDrawColor(220, 220, 220);
-                        
-                        if (STUDENT_ANSWERS[i] == b) {
-                            // Selected Bubble
-                            if (STUDENT_ANSWERS[i] == MASTER_KEY[i]) {
-                                doc.setFillColor(16, 185, 129); // Green
-                            } else {
-                                doc.setFillColor(244, 63, 94); // Red
-                            }
-                            doc.circle(bx, by, 4, 'F');
-                        } else if (MASTER_KEY[i] == b && STUDENT_ANSWERS[i] !== null) {
-                            // Correct Answer (Dashed Outline)
-                            doc.setDrawColor(16, 185, 129);
-                            doc.circle(bx, by, 4, 'D');
-                        } else {
-                            // Empty Bubble
-                            doc.circle(bx, by, 4, 'D');
-                        }
-                    }
-                }
-
-                // Final Output Path - Data URI is most compatible for mobile
-                const pdfOutput = doc.output('datauristring');
-                const link = document.createElement('a');
-                link.href = pdfOutput;
-                link.download = `NEET_Report_${name}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-            } catch (err) {
-                console.error(err);
-                alert("Mobile Engine Error: " + err.message);
-            }
-        }
+        window.onload = init;
+    </script>
+</body>
+</html>
