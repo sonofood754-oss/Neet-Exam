@@ -206,40 +206,55 @@
         }
 
         function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const name = document.getElementById('studentName').value || "Candidate";
-            const stats = updateUI();
-            const total = document.getElementById('resTotal').innerText;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const name = document.getElementById('studentName').value || "Candidate";
+    const stats = updateUI();
+    const total = document.getElementById('resTotal').innerText;
 
-            doc.setFillColor(30, 27, 75); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET PERFORMANCE REPORT", 15, 20);
-            doc.setFontSize(10); doc.text(`STUDENT: ${name.toUpperCase()} | SCORE: ${total}/720`, 15, 33);
+    // Report Header
+    doc.setFillColor(30, 27, 75); doc.rect(0, 0, 210, 45, 'F');
+    doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET PERFORMANCE REPORT", 15, 20);
+    doc.setFontSize(10); doc.text(`STUDENT: ${name.toUpperCase()} | SCORE: ${total}/720`, 15, 33);
 
-            doc.setFillColor(245, 247, 250); doc.rect(15, 52, 180, 25, 'F');
-            doc.setTextColor(0); doc.setFontSize(9);
-            doc.text("SUBJECT", 20, 58); doc.text("SCORE", 70, 58); doc.text("CORRECT", 100, 58); doc.text("MISTAKES", 135, 58); doc.text("SKIPPED", 170, 58);
-            
-            let y = 65;
-            [['Physics', stats.phy], ['Chemistry', stats.chem], ['Biology', stats.bio]].forEach(row => {
-                doc.text(row[0], 20, y); doc.text(row[1].p.toString(), 70, y); doc.text(row[1].c.toString(), 100, y); doc.text(row[1].m.toString(), 135, y); doc.text(row[1].u.toString(), 170, y);
-                y += 5;
-            });
+    // Summary Table
+    doc.setFillColor(245, 247, 250); doc.rect(15, 52, 180, 25, 'F');
+    doc.setTextColor(0); doc.setFontSize(9);
+    doc.text("SUBJECT", 20, 58); doc.text("SCORE", 70, 58); doc.text("CORRECT", 100, 58); doc.text("MISTAKES", 135, 58); doc.text("SKIPPED", 170, 58);
+    
+    let y = 65;
+    [['Physics', stats.phy], ['Chemistry', stats.chem], ['Biology', stats.bio]].forEach(row => {
+        doc.text(row[0], 20, y); doc.text(row[1].p.toString(), 70, y); doc.text(row[1].c.toString(), 100, y); doc.text(row[1].m.toString(), 135, y); doc.text(row[1].u.toString(), 170, y);
+        y += 5;
+    });
 
-            let yGrid = 90;
-            for (let i = 0; i < 180; i++) {
-                let col = Math.floor(i/45), row = i%45, x = 15+(col*46), yPos = yGrid+(row*4);
-                doc.setFontSize(5); doc.setTextColor(180); doc.text(`${i+1}`, x, yPos);
-                for (let b = 1; b <= 4; b++) {
-                    let bx = x+6+(b*5), sel = userSel[i], cor = masterKey[i];
-                    if (sel == b) { doc.setFillColor(sel == cor ? [16,185,129] : [244,63,94]); doc.circle(bx, yPos-1, 1.2, 'F'); }
-                    else if (cor == b && sel !== null) { doc.setDrawColor(16,185,129); doc.circle(bx, yPos-1, 1.2, 'D'); }
-                    else { doc.setDrawColor(220); doc.circle(bx, yPos-1, 1.2, 'D'); }
-                }
-            }
-            doc.save(`${name}_NEET_Analysis.pdf`);
+    // OMR Grid
+    let yGrid = 90;
+    for (let i = 0; i < 180; i++) {
+        let col = Math.floor(i/45), row = i%45, x = 15+(col*46), yPos = yGrid+(row*4);
+        doc.setFontSize(5); doc.setTextColor(180); doc.text(`${i+1}`, x, yPos);
+        for (let b = 1; b <= 4; b++) {
+            let bx = x+6+(b*5), sel = userSel[i], cor = masterKey[i];
+            if (sel == b) { doc.setFillColor(sel == cor ? [16,185,129] : [244,63,94]); doc.circle(bx, yPos-1, 1.2, 'F'); }
+            else if (cor == b && sel !== null) { doc.setDrawColor(16,185,129); doc.circle(bx, yPos-1, 1.2, 'D'); }
+            else { doc.setDrawColor(220); doc.circle(bx, yPos-1, 1.2, 'D'); }
         }
-        init();
-    </script>
-</body>
-</html>
+    }
+
+    // SAFARI FIX: Instead of .save(), we use a Blob URL
+    const pdfBlob = doc.output('blob');
+    const url = URL.createObjectURL(pdfBlob);
+    
+    // Create a hidden link and click it
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${name}_NEET_Analysis.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Backup for very old iPads: Open in new tab
+    setTimeout(() => {
+        if (!link.clicked) window.open(url, '_blank');
+    }, 500);
+}
