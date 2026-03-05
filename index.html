@@ -3,123 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STRIDEPRO | Forensic Quad-Column</title>
+    <title>STRIDEPRO | Forensic Precision</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
         body { background: #080a0f; color: #f8fafc; font-family: 'Outfit', sans-serif; }
         
-        /* 4-Column Layout Logic */
+        /* Forces 4 columns side-by-side on iPad/PC */
         .omr-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            max-width: 1400px;
+            gap: 10px;
+            max-width: 100%;
             margin: 0 auto;
         }
-
-        @media (max-width: 1100px) { .omr-container { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 650px) { .omr-container { grid-template-columns: 1fr; } }
 
         .omr-column {
             background: rgba(30, 41, 59, 0.2);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 10px;
-        }
-
-        .subject-header {
-            font-size: 10px;
-            font-weight: 900;
-            text-align: center;
+            border-radius: 12px;
             padding: 8px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 10px;
         }
 
+        /* Tightens the gap between Number and Bubbles */
         .omr-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 5px 10px;
-            margin-bottom: 4px;
-            border-radius: 8px;
+            padding: 4px 6px;
+            margin-bottom: 2px;
+            border-radius: 6px;
             background: rgba(15, 23, 42, 0.4);
+            justify-content: flex-start; /* Keeps them close together */
         }
 
         .bubble {
-            width: 26px;
-            height: 26px;
-            border: 1.5px solid #334155;
+            width: 24px;
+            height: 24px;
+            border: 1.2px solid #334155;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
+            margin-left: 6px; /* Small gap between bubbles */
         }
 
         .bubble.selected {
             background: #6366f1;
             border-color: #818cf8;
             color: white;
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
         }
 
-        .q-tag { font-size: 10px; font-weight: 800; color: #64748b; min-width: 22px; }
+        .q-tag { font-size: 10px; font-weight: 800; color: #64748b; width: 22px; text-align: right; margin-right: 8px; }
 
-        .status-bar {
+        .header-fixed {
             position: sticky;
             top: 0; z-index: 50;
             background: rgba(8, 10, 15, 0.9);
             backdrop-filter: blur(12px);
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-10">
 
-    <div class="status-bar mb-6">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black italic text-indigo-500">STRIDE<span class="text-white">PRO</span></h1>
-            <div class="flex items-center gap-4">
-                <div id="timer" class="font-mono text-xl bg-slate-900 px-4 py-1 rounded-lg border border-slate-700">03:00:00</div>
-                <button onclick="calculate()" id="submitBtn" class="hidden bg-indigo-600 px-6 py-2 rounded-lg font-bold uppercase text-[10px] tracking-widest">Analyze</button>
-                <button onclick="generatePDF()" id="pdfBtn" class="hidden bg-white text-black px-6 py-2 rounded-lg font-bold uppercase text-[10px] tracking-widest">Report</button>
+    <div class="header-fixed mb-4">
+        <div class="flex justify-between items-center max-w-full">
+            <h1 class="text-xl font-black italic text-indigo-500">STRIDE<span class="text-white">PRO</span></h1>
+            <div class="flex items-center gap-3">
+                <div id="timer" class="font-mono text-lg bg-slate-900 px-3 py-1 rounded border border-slate-700">03:00:00</div>
+                <button onclick="calculate()" id="submitBtn" class="hidden bg-indigo-600 px-4 py-1.5 rounded font-bold uppercase text-[9px] tracking-widest">Submit</button>
+                <button onclick="generatePDF()" id="pdfBtn" class="hidden bg-white text-black px-4 py-1.5 rounded font-bold uppercase text-[9px] tracking-widest">PDF Report</button>
             </div>
         </div>
     </div>
 
-    <main class="px-4 space-y-6">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="text" id="studentName" placeholder="Candidate Name" class="bg-slate-900 border border-slate-800 p-3 rounded-xl outline-none focus:border-indigo-500 text-sm">
-            <div class="flex gap-2">
-                <input type="text" id="keyInput" placeholder="Paste 180 Digit Key" class="flex-1 bg-slate-900 border border-slate-800 p-3 rounded-xl outline-none focus:border-indigo-500 font-mono text-xs">
-                <button onclick="sync()" class="bg-indigo-600 px-6 rounded-xl font-bold text-[10px] uppercase tracking-tighter">Sync Key</button>
-            </div>
+    <main class="px-2 space-y-4">
+        <div class="flex flex-wrap gap-2 mb-4">
+            <input type="text" id="studentName" placeholder="Name" class="bg-slate-900 border border-slate-800 p-2 rounded-lg outline-none focus:border-indigo-500 text-xs w-40">
+            <input type="text" id="keyInput" placeholder="Paste 180 Digit Key" class="flex-1 bg-slate-900 border border-slate-800 p-2 rounded-lg outline-none focus:border-indigo-500 font-mono text-xs">
+            <button onclick="sync()" class="bg-indigo-600 px-4 rounded-lg font-bold text-[9px] uppercase">Sync</button>
         </div>
 
         <div class="omr-container">
             <div class="omr-column">
-                <div class="subject-header text-indigo-400">Physics (1-45)</div>
+                <div class="text-[9px] font-bold text-center text-indigo-400 mb-2">PHY (1-45)</div>
                 <div id="col-1"></div>
             </div>
             <div class="omr-column">
-                <div class="subject-header text-emerald-400">Chemistry (46-90)</div>
+                <div class="text-[9px] font-bold text-center text-emerald-400 mb-2">CHEM (46-90)</div>
                 <div id="col-2"></div>
             </div>
             <div class="omr-column">
-                <div class="subject-header text-rose-400">Biology (91-135)</div>
+                <div class="text-[9px] font-bold text-center text-rose-400 mb-2">BIO (91-135)</div>
                 <div id="col-3"></div>
             </div>
             <div class="omr-column">
-                <div class="subject-header text-rose-400">Biology (136-180)</div>
+                <div class="text-[9px] font-bold text-center text-rose-400 mb-2">BIO (136-180)</div>
                 <div id="col-4"></div>
             </div>
         </div>
@@ -132,10 +118,8 @@
         let REPORT = { phy: {c:0,w:0,u:0, listW:[]}, chem: {c:0,w:0,u:0, listW:[]}, bio: {c:0,w:0,u:0, listW:[]} };
 
         function init() {
-            render(1, 45, 'col-1');
-            render(46, 90, 'col-2');
-            render(91, 135, 'col-3');
-            render(136, 180, 'col-4');
+            render(1, 45, 'col-1'); render(46, 90, 'col-2');
+            render(91, 135, 'col-3'); render(136, 180, 'col-4');
             startTime();
         }
 
@@ -144,8 +128,8 @@
             for(let i=s; i<=e; i++) {
                 container.innerHTML += `
                     <div class="omr-row">
-                        <span class="q-tag">${i}.</span>
-                        <div class="flex gap-1" data-q="${i}">
+                        <span class="q-tag">${i}</span>
+                        <div class="flex" data-q="${i}">
                             ${[1,2,3,4].map(n => `<div class="bubble" onclick="mark(${i}, ${n}, this)">${n}</div>`).join('')}
                         </div>
                     </div>`;
@@ -162,12 +146,12 @@
         function sync() {
             const val = document.getElementById('keyInput').value;
             MASTER = val.match(/[1-4]/g) || [];
-            if(MASTER.length < 180) return alert("Must be 180 digits!");
+            if(MASTER.length < 180) return alert("Requires 180 digits.");
             document.getElementById('submitBtn').classList.remove('hidden');
         }
 
         function calculate() {
-            if(!confirm("Finalize responses?")) return;
+            if(!confirm("Submit audit?")) return;
             LOCKED = true;
             document.getElementById('submitBtn').classList.add('hidden');
             document.getElementById('pdfBtn').classList.remove('hidden');
@@ -176,16 +160,15 @@
                 const cor = parseInt(MASTER[i]);
                 const q = i + 1;
                 let s = q <= 45 ? 'phy' : (q <= 90 ? 'chem' : 'bio');
-                
-                if(ans === null) { REPORT[s].u++; }
-                else if(ans === cor) { REPORT[s].c++; }
+                if(ans === null) REPORT[s].u++;
+                else if(ans === cor) REPORT[s].c++;
                 else { REPORT[s].w++; REPORT[s].listW.push(q); }
 
                 const bubbles = document.querySelectorAll(`[data-q="${q}"] .bubble`);
                 bubbles.forEach(b => {
                     const val = parseInt(b.innerText);
                     if(val === ans) b.style.background = (ans === cor) ? "#10b981" : "#ef4444";
-                    if(val === cor && ans !== null) b.style.border = "2px dashed #10b981";
+                    if(val === cor && ans !== null) b.style.border = "1.5px dashed #10b981";
                 });
             });
         }
@@ -195,44 +178,40 @@
             const doc = new jsPDF('p', 'pt', 'a4');
             const name = document.getElementById('studentName').value || "STUDENT";
 
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 600, 80, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET STRIDE FORENSIC REPORT", 40, 45);
-            doc.setFontSize(10); doc.text(`CANDIDATE: ${name.toUpperCase()}`, 40, 65);
-
-            let y = 120;
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 600, 60, 'F');
+            doc.setTextColor(255); doc.setFontSize(18); doc.text("STRIDEPRO REPORT", 40, 38);
+            
+            let y = 100;
             const subs = [ {n: "PHYSICS", d: REPORT.phy}, {n: "CHEMISTRY", d: REPORT.chem}, {n: "BIOLOGY", d: REPORT.bio} ];
             subs.forEach(sub => {
-                doc.setFillColor(245); doc.roundedRect(40, y, 515, 60, 5, 5, 'F');
-                doc.setTextColor(30); doc.setFontSize(11); doc.text(sub.n, 55, y+20);
-                doc.setFontSize(9); doc.text(`Score: ${sub.d.c*4 - sub.d.w} | Correct: ${sub.d.c} | Wrong: ${sub.d.w} | Left: ${sub.d.u}`, 55, y+38);
-                doc.text(`Error List: ${sub.d.listW.join(', ') || 'None'}`, 55, y+52, {maxWidth: 480});
-                y += 75;
+                doc.setFillColor(245); doc.roundedRect(40, y, 515, 45, 5, 5, 'F');
+                doc.setTextColor(30); doc.setFontSize(10); doc.text(sub.n, 50, y+15);
+                doc.setFontSize(8); doc.text(`Score: ${sub.d.c*4 - sub.d.w} | Wrong: ${sub.d.listW.join(', ') || 'None'}`, 50, y+30, {maxWidth: 480});
+                y += 55;
             });
 
-            // OMR Map Fix (Coordinates standardized to avoid errors)
-            doc.setFontSize(12); doc.text("OMR RECONSTRUCTION", 40, y+20);
-            let sx=40, sy=y+50;
+            // Standardized PDF Reconstruction
+            let sx=40, sy=y+30;
             for(let i=0; i<180; i++) {
                 let col = Math.floor(i/45), row = i%45;
-                let x = sx + (col*130), yp = sy + (row*11);
-                doc.setFontSize(6); doc.setTextColor(180); doc.text(`${i+1}`, x, yp);
+                let x = sx + (col*135), yp = sy + (row*11);
+                doc.setFontSize(5); doc.setTextColor(150); doc.text(`${i+1}`, x, yp);
                 for(let b=1; b<=4; b++) {
-                    let bx = x+20+(b*18), by = yp-2;
+                    let bx = x+15+(b*16), by = yp-2;
                     doc.setDrawColor(200);
                     if(STUDENT[i] == b) {
                         doc.setFillColor(STUDENT[i] == MASTER[i] ? 16 : 239, STUDENT[i] == MASTER[i] ? 185 : 68, 129);
-                        doc.circle(bx, by, 3.5, 'F');
-                    } else { doc.circle(bx, by, 3.5, 'D'); }
+                        doc.circle(bx, by, 3, 'F');
+                    } else { doc.circle(bx, by, 3, 'D'); }
                 }
             }
-            doc.save(`STRIDE_AUDIT_${name}.pdf`);
+            doc.save(`STRIDE_${name}.pdf`);
         }
 
         function startTime() {
             let s = 10800;
             setInterval(() => { if(!LOCKED) { s--; let h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60; document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sc.toString().padStart(2,'0')}`; }}, 1000);
         }
-
         init();
     </script>
 </body>
