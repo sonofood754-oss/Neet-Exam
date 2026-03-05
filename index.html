@@ -21,61 +21,72 @@
 <body class="pb-48">
 
     <div class="max-w-7xl mx-auto p-4 md:p-8">
-        <header class="text-center mb-10">
-            <h1 class="text-3xl font-black tracking-tighter text-slate-900 uppercase">STRIDE<span class="text-blue-600">PRO</span></h1>
-            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Forensic Auditor v7.0 (Stable)</p>
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-black tracking-tighter text-slate-900 uppercase">STRIDE<span class="text-blue-600">PRO</span></h1>
+                <p class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">V8.0 High-Performance Stable</p>
+            </div>
+            <div id="syncIndicator" class="px-4 py-2 rounded-full bg-slate-100 text-[10px] font-bold text-slate-400 uppercase">Offline</div>
         </header>
 
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <input type="text" id="studentName" placeholder="Enter Student Name" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold">
-            <div class="flex gap-2">
-                <input type="text" id="keyInput" placeholder="Paste Key (Any Length)" class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-mono text-xs">
-                <button onclick="syncKey()" class="bg-blue-600 text-white px-6 rounded-xl font-bold text-xs uppercase hover:bg-blue-700 transition">Sync Key</button>
+        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Student Identity</label>
+                <input type="text" id="studentName" placeholder="Candidate Name" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl outline-none font-bold focus:border-blue-500 transition-all">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Master Answer Key</label>
+                <div class="flex gap-2">
+                    <input type="text" id="keyInput" placeholder="Paste Key (Any length)" class="flex-1 bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl outline-none font-mono text-sm focus:border-blue-500 transition-all">
+                    <button onclick="syncKey()" class="bg-blue-600 text-white px-8 rounded-2xl font-black text-xs uppercase hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all">Sync</button>
+                </div>
             </div>
         </div>
 
-        <div id="keyStatus" class="text-center mb-8 font-black text-xs text-slate-400 uppercase tracking-widest">System: Ready</div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="subject-column"><h3 class="text-blue-600 font-black text-[10px] uppercase mb-4 text-center">Physics (1-45)</h3><div id="col-1"></div></div>
-            <div class="subject-column"><h3 class="text-emerald-600 font-black text-[10px] uppercase mb-4 text-center">Chemistry (46-90)</h3><div id="col-2"></div></div>
-            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center">Biology (91-135)</h3><div id="col-3"></div></div>
-            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center">Biology (136-180)</h3><div id="col-4"></div></div>
+            <div class="subject-column"><h3 class="text-blue-600 font-black text-[10px] uppercase mb-4 text-center border-b pb-2">Physics (1-45)</h3><div id="col-1"></div></div>
+            <div class="subject-column"><h3 class="text-emerald-600 font-black text-[10px] uppercase mb-4 text-center border-b pb-2">Chemistry (46-90)</h3><div id="col-2"></div></div>
+            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center border-b pb-2">Biology 1 (91-135)</h3><div id="col-3"></div></div>
+            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center border-b pb-2">Biology 2 (136-180)</h3><div id="col-4"></div></div>
         </div>
     </div>
 
     <div class="sticky-hud flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="flex gap-8">
+        <div class="flex gap-10">
             <div class="text-center">
-                <p class="text-[9px] font-black text-slate-400 uppercase">Physics</p>
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Physics</p>
                 <p id="scorePhy" class="text-2xl font-black text-blue-600">0</p>
-                <p id="statPhy" class="text-[8px] font-bold text-slate-400">M: 0 | U: 45</p>
+                <p id="statPhy" class="text-[9px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full mt-1">M: 0 | U: 45</p>
             </div>
-            <div class="text-center border-l border-slate-100 pl-8">
-                <p class="text-[9px] font-black text-slate-400 uppercase">Chemistry</p>
+            <div class="text-center border-l border-slate-100 pl-10">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Chemistry</p>
                 <p id="scoreChem" class="text-2xl font-black text-emerald-600">0</p>
-                <p id="statChem" class="text-[8px] font-bold text-slate-400">M: 0 | U: 45</p>
+                <p id="statChem" class="text-[9px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full mt-1">M: 0 | U: 45</p>
             </div>
-            <div class="text-center border-l border-slate-100 pl-8">
-                <p class="text-[9px] font-black text-slate-400 uppercase">Biology</p>
+            <div class="text-center border-l border-slate-100 pl-10">
+                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Biology</p>
                 <p id="scoreBio" class="text-2xl font-black text-rose-600">0</p>
-                <p id="statBio" class="text-[8px] font-bold text-slate-400">M: 0 | U: 90</p>
+                <p id="statBio" class="text-[9px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full mt-1">M: 0 | U: 90</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-8">
             <div class="text-right">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Total Score</p>
-                <p class="text-4xl font-black text-slate-900"><span id="grandTotal">0</span> <span class="text-lg text-blue-600">/ 720</span></p>
+                <p class="text-[10px] font-black text-slate-400 uppercase">Grand Total</p>
+                <p class="text-4xl font-black text-slate-900 tracking-tighter"><span id="grandTotal">0</span> <span class="text-lg text-blue-600">/ 720</span></p>
             </div>
-            <button onclick="generatePDF()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-lg hover:scale-105 transition-all">Download Report</button>
+            <button onclick="generatePDF()" class="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase shadow-2xl hover:bg-black hover:-translate-y-1 transition-all active:scale-95">Download Audit</button>
         </div>
     </div>
 
     <script>
         let MASTER = [];
         let STUDENT = new Array(180).fill(null);
-        let MISTAKES = { phy: [], chem: [], bio: [] };
+        let STATS = { 
+            phy: {s:0, m:0, u:45, mis:[]}, 
+            chem: {s:0, m:0, u:45, mis:[]}, 
+            bio: {s:0, m:0, u:90, mis:[]} 
+        };
 
         function init() {
             renderSection(1, 45, 'col-1'); renderSection(46, 90, 'col-2');
@@ -85,25 +96,33 @@
         function renderSection(s, e, id) {
             const el = document.getElementById(id);
             for(let i=s; i<=e; i++) {
-                el.innerHTML += `<div class="omr-row"><span class="q-num">${i}.</span><div class="flex">${[1,2,3,4].map(n => `<div class="bubble" data-q="${i}" data-v="${n}" onclick="audit(${i}, ${n}, this)">${n}</div>`).join('')}</div></div>`;
+                el.innerHTML += `
+                <div class="omr-row">
+                    <span class="q-num">${i}.</span>
+                    <div class="flex">
+                        ${[1,2,3,4].map(n => `<div class="bubble" data-q="${i}" data-v="${n}" onclick="audit(${i}, ${n}, this)">${n}</div>`).join('')}
+                    </div>
+                </div>`;
             }
         }
 
         function syncKey() {
             const input = document.getElementById('keyInput').value;
             MASTER = input.match(/[1-4]/g) || [];
-            document.getElementById('keyStatus').innerText = `Key Active: ${MASTER.length} Questions Detected`;
-            document.getElementById('keyStatus').className = "text-center mb-8 font-black text-xs text-emerald-500 uppercase tracking-widest";
+            const indicator = document.getElementById('syncIndicator');
+            indicator.innerText = `Active: ${MASTER.length} Qs`;
+            indicator.className = "px-4 py-2 rounded-full bg-emerald-50 text-[10px] font-bold text-emerald-600 uppercase";
             updateHUD();
         }
 
         function audit(q, val, el) {
-            if(MASTER.length === 0) return alert("Please sync a key first!");
-            if(q > MASTER.length) return alert(`Key only covers up to Q${MASTER.length}`);
+            if(MASTER.length === 0) return alert("Sync a key first!");
+            if(q > MASTER.length) return alert(`Current key only covers up to Q${MASTER.length}`);
 
             const correct = parseInt(MASTER[q-1]);
             if(STUDENT[q-1] && STUDENT[q-1].v === val) {
-                STUDENT[q-1] = null; el.className = 'bubble';
+                STUDENT[q-1] = null; 
+                el.className = 'bubble';
             } else {
                 el.parentElement.querySelectorAll('.bubble').forEach(b => b.className = 'bubble');
                 STUDENT[q-1] = { v: val, status: (val === correct ? 'C' : 'W') };
@@ -113,15 +132,16 @@
         }
 
         function updateHUD() {
-            let p={s:0,m:0,u:45, mis:[]}, c={s:0,m:0,u:45, mis:[]}, b={s:0,m:0,u:90, mis:[]};
+            let p={s:0, m:0, u:45, mis:[]}, c={s:0, m:0, u:45, mis:[]}, b={s:0, m:0, u:90, mis:[]};
             STUDENT.forEach((ans, i) => {
-                if(!ans) return;
                 let t = (i < 45) ? p : (i < 90) ? c : b;
-                t.u--;
-                if(ans.status === 'C') t.s += 4;
-                else { t.s -= 1; t.m++; t.mis.push(i+1); }
+                if(ans) {
+                    t.u--;
+                    if(ans.status === 'C') t.s += 4;
+                    else { t.s -= 1; t.m++; t.mis.push(i+1); }
+                }
             });
-            MISTAKES = { phy: p.mis, chem: c.mis, bio: b.mis };
+            STATS = { phy: p, chem: c, bio: b };
             document.getElementById('scorePhy').innerText = p.s;
             document.getElementById('statPhy').innerText = `M: ${p.m} | U: ${p.u}`;
             document.getElementById('scoreChem').innerText = c.s;
@@ -136,50 +156,91 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('p', 'pt', 'a4');
                 const name = (document.getElementById('studentName').value || "CANDIDATE").toUpperCase();
+                const total = document.getElementById('grandTotal').innerText;
 
-                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 600, 80, 'F');
-                doc.setTextColor(255); doc.setFontSize(22); doc.text("STRIDEPRO FORENSIC AUDIT", 40, 45);
-                doc.setFontSize(10); doc.text(`NAME: ${name} | TOTAL: ${document.getElementById('grandTotal').innerText}/720`, 40, 65);
+                // HEADER SECTION (Manual Drawing for Stability)
+                doc.setFillColor(30, 41, 59); 
+                doc.rect(0, 0, 595.28, 100, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(24);
+                doc.text("STRIDEPRO FORENSIC AUDIT", 40, 50);
+                doc.setFontSize(10);
+                doc.text(`CANDIDATE: ${name}  |  TOTAL SCORE: ${total}/720  |  AUDITED Qs: ${MASTER.length}`, 40, 75);
 
-                let y = 110;
-                const subjects = [
-                    {n: "PHYSICS", s: document.getElementById('scorePhy').innerText, m: MISTAKES.phy},
-                    {n: "CHEMISTRY", s: document.getElementById('scoreChem').innerText, m: MISTAKES.chem},
-                    {n: "BIOLOGY", s: document.getElementById('scoreBio').innerText, m: MISTAKES.bio}
+                // ANALYTICS CARDS (Restored Subject Stats)
+                let y = 140;
+                const sections = [
+                    {title: "PHYSICS", data: STATS.phy, color: [37, 99, 235]},
+                    {title: "CHEMISTRY", data: STATS.chem, color: [5, 150, 105]},
+                    {title: "BIOLOGY", data: STATS.bio, color: [225, 29, 72]}
                 ];
 
-                subjects.forEach(sub => {
-                    doc.setFillColor(248, 250, 252); doc.roundedRect(40, y, 515, 50, 5, 5, 'F');
-                    doc.setTextColor(30); doc.setFontSize(11); doc.text(`${sub.n}: ${sub.s} Marks`, 55, y+20);
-                    doc.setFontSize(8); doc.setTextColor(200, 0, 0);
-                    doc.text(`Mistakes: ${sub.m.join(', ') || 'None'}`, 55, y+38, {maxWidth: 480});
-                    y += 60;
+                sections.forEach(sec => {
+                    doc.setFillColor(248, 250, 252);
+                    doc.roundedRect(40, y, 515, 55, 8, 8, 'F');
+                    doc.setDrawColor(sec.color[0], sec.color[1], sec.color[2]);
+                    doc.setLineWidth(1.5);
+                    doc.line(40, y, 40, y+55);
+
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFontSize(12);
+                    doc.text(`${sec.title}: ${sec.data.s} MARKS`, 55, y + 22);
+                    
+                    doc.setFontSize(8);
+                    doc.setTextColor(100, 116, 139);
+                    doc.text(`Mistakes: ${sec.data.m}  |  Unattempted: ${sec.data.data_u || sec.data.u}`, 55, y + 36);
+                    
+                    doc.setTextColor(220, 38, 38);
+                    const mistakeList = sec.data.mis.length > 0 ? sec.data.mis.join(", ") : "None";
+                    doc.text(`Q-Log Errors: ${mistakeList}`, 55, y + 48, {maxWidth: 480});
+                    y += 75;
                 });
 
-                doc.setTextColor(30); doc.setFontSize(12); doc.text("VISUAL OMR RECONSTRUCTION", 40, y+20);
+                // OMR VISUALIZATION (Grid Logic Fix)
+                doc.setTextColor(30, 41, 59);
+                doc.setFontSize(14);
+                doc.text("OMR RESPONSE RECONSTRUCTION", 40, y + 10);
                 y += 40;
-                for(let i=0; i<180; i++) {
-                    let col = Math.floor(i/45), row = i % 45, px = 40 + (col * 135), py = y + (row * 11);
-                    doc.setFontSize(6); 
-                    doc.setTextColor(i < MASTER.length ? 150 : 220);
-                    doc.text(`${i+1}`, px, py);
-                    for(let b=1; b<=4; b++) {
-                        let bx = px + 20 + (b*18);
-                        doc.setDrawColor(230);
-                        if(STUDENT[i] && STUDENT[i].v === b) {
-                            doc.setFillColor(STUDENT[i].status === 'C' ? [34, 197, 94] : [239, 68, 68]);
-                            doc.circle(bx, py-2, 3.5, 'F');
-                        } else { doc.circle(bx, py-2, 3.5, 'D'); }
+
+                for (let i = 0; i < 180; i++) {
+                    const col = Math.floor(i / 45);
+                    const row = i % 45;
+                    const xBase = 40 + (col * 135);
+                    const yBase = y + (row * 12);
+
+                    doc.setFontSize(7);
+                    doc.setTextColor(i < MASTER.length ? 100 : 200);
+                    doc.text(`${i + 1}`, xBase, yBase);
+
+                    for (let opt = 1; opt <= 4; opt++) {
+                        const circleX = xBase + 20 + (opt * 18);
+                        doc.setDrawColor(226, 232, 240);
+                        doc.setLineWidth(0.5);
+                        
+                        if (STUDENT[i] && STUDENT[i].v === opt) {
+                            if (STUDENT[i].status === 'C') doc.setFillColor(34, 197, 94);
+                            else doc.setFillColor(239, 68, 68);
+                            doc.circle(circleX, yBase - 2.5, 4, 'F');
+                        } else {
+                            doc.circle(circleX, yBase - 2.5, 4, 'S');
+                        }
                     }
                 }
 
-                const blob = doc.output('blob');
-                const url = URL.createObjectURL(blob);
-                window.open(url, '_blank');
-            } catch (e) {
-                alert("Critical Bug Found: " + e.message);
+                // Final Action: iPad Multi-Path Export
+                const pdfBlob = doc.output('blob');
+                const url = URL.createObjectURL(pdfBlob);
+                const win = window.open(url, '_blank');
+                if (!win) {
+                    doc.save(`StridePro_${name.replace(/\s+/g, '_')}.pdf`);
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("STABILITY ALERT: Error during PDF generation. Ensure key is synced.");
             }
         }
+
         init();
     </script>
 </body>
