@@ -23,43 +23,39 @@
     <div class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="text-center mb-10">
             <h1 class="text-3xl font-black tracking-tighter text-slate-900 uppercase">STRIDE<span class="text-blue-600">PRO</span></h1>
-            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">V6.0 Bulletproof Download System</p>
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Elastic Forensic Engine v6.5</p>
         </header>
 
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <input type="text" id="studentName" placeholder="Enter Student Name" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold text-slate-700">
+            <input type="text" id="studentName" placeholder="Candidate Name" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-bold">
             <div class="flex gap-2">
-                <input type="text" id="keyInput" placeholder="Paste 180-Digit Master Key" class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-mono text-xs">
-                <button onclick="syncKey()" class="bg-slate-900 text-white px-6 rounded-xl font-bold text-xs uppercase hover:bg-blue-600 transition">Sync</button>
+                <input type="text" id="keyInput" placeholder="Paste Key (Any length up to 180)" class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-mono text-xs">
+                <button onclick="syncKey()" class="bg-blue-600 text-white px-6 rounded-xl font-bold text-xs uppercase hover:bg-blue-700 transition">Sync</button>
             </div>
         </div>
 
-        <div id="keyStatus" class="text-center mb-8 font-bold text-sm text-red-500 italic uppercase">Key Status: Waiting for Integration</div>
+        <div id="keyStatus" class="text-center mb-8 font-bold text-xs text-slate-400 uppercase tracking-widest">System: Ready</div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="subject-column"><h3 class="text-blue-600 font-black text-[10px] uppercase mb-4 text-center">Physics</h3><div id="col-1"></div></div>
-            <div class="subject-column"><h3 class="text-emerald-600 font-black text-[10px] uppercase mb-4 text-center">Chemistry</h3><div id="col-2"></div></div>
-            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center">Biology 1</h3><div id="col-3"></div></div>
-            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center">Biology 2</h3><div id="col-4"></div></div>
+            <div class="subject-column"><h3 class="text-blue-600 font-black text-[10px] uppercase mb-4 text-center">Section A</h3><div id="col-1"></div></div>
+            <div class="subject-column"><h3 class="text-emerald-600 font-black text-[10px] uppercase mb-4 text-center">Section B</h3><div id="col-2"></div></div>
+            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center">Section C</h3><div id="col-3"></div></div>
+            <div class="subject-column"><h3 class="text-rose-600 font-black text-[10px] uppercase mb-4 text-center">Section D</h3><div id="col-4"></div></div>
         </div>
     </div>
 
     <div class="sticky-hud flex flex-col md:flex-row justify-between items-center gap-6">
         <div class="flex gap-8">
-            <div class="text-center"><p class="text-[9px] font-black text-slate-400">PHY</p><p id="scorePhy" class="text-2xl font-black text-blue-600">0</p><p id="statPhy" class="text-[8px] font-bold text-slate-400">M: 0 | U: 45</p></div>
-            <div class="text-center border-l pl-8"><p class="text-[9px] font-black text-slate-400">CHEM</p><p id="scoreChem" class="text-2xl font-black text-emerald-600">0</p><p id="statChem" class="text-[8px] font-bold text-slate-400">M: 0 | U: 45</p></div>
-            <div class="text-center border-l pl-8"><p class="text-[9px] font-black text-slate-400">BIO</p><p id="scoreBio" class="text-2xl font-black text-rose-600">0</p><p id="statBio" class="text-[8px] font-bold text-slate-400">M: 0 | U: 90</p></div>
+            <div class="text-center"><p class="text-[9px] font-black text-slate-400">SCORE</p><p id="grandTotal" class="text-3xl font-black text-slate-900">0</p></div>
+            <div class="text-center border-l pl-8"><p class="text-[9px] font-black text-slate-400">CORRECT</p><p id="countCorrect" class="text-xl font-bold text-emerald-600">0</p></div>
+            <div class="text-center border-l pl-8"><p class="text-[9px] font-black text-slate-400">WRONG</p><p id="countWrong" class="text-xl font-bold text-rose-600">0</p></div>
         </div>
-        <div class="flex items-center gap-6">
-            <div class="text-right font-black"><p class="text-[10px] text-slate-400">TOTAL</p><p class="text-4xl text-slate-900"><span id="grandTotal">0</span> <span class="text-lg text-blue-600">/ 720</span></p></div>
-            <button id="reportBtn" onclick="generatePDF()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-lg hover:bg-blue-700 transition">Generate PDF</button>
-        </div>
+        <button onclick="generatePDF()" class="w-full md:w-auto bg-slate-900 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition-all">Download Audit</button>
     </div>
 
     <script>
         let MASTER = [];
         let STUDENT = new Array(180).fill(null);
-        let STATS = { phy: {s:0, m:0, u:45, mis:[]}, chem: {s:0, m:0, u:45, mis:[]}, bio: {s:0, m:0, u:90, mis:[]} };
 
         function init() {
             renderSection(1, 45, 'col-1'); renderSection(46, 90, 'col-2');
@@ -76,14 +72,15 @@
         function syncKey() {
             const input = document.getElementById('keyInput').value;
             MASTER = input.match(/[1-4]/g) || [];
-            if(MASTER.length >= 180) {
-                document.getElementById('keyStatus').innerText = "Key Status: Master Integrated";
-                document.getElementById('keyStatus').className = "text-center mb-8 font-bold text-sm text-emerald-500 uppercase tracking-widest";
-            }
+            document.getElementById('keyStatus').innerText = `Key Loaded: ${MASTER.length} Questions Detected`;
+            document.getElementById('keyStatus').className = "text-center mb-8 font-black text-xs text-emerald-500 uppercase tracking-widest";
+            updateScores();
         }
 
         function audit(q, val, el) {
-            if(MASTER.length < 180) return alert("Sync 180-digit key first!");
+            if(MASTER.length === 0) return alert("Sync a key first (it can be any length)!");
+            if(q > MASTER.length) return alert(`The key only covers up to Question ${MASTER.length}.`);
+
             const correct = parseInt(MASTER[q-1]);
             if(STUDENT[q-1] && STUDENT[q-1].v === val) {
                 STUDENT[q-1] = null; el.className = 'bubble';
@@ -92,69 +89,67 @@
                 STUDENT[q-1] = { v: val, status: (val === correct ? 'C' : 'W') };
                 el.classList.add(val === correct ? 'correct' : 'wrong');
             }
-            updateHUD();
+            updateScores();
         }
 
-        function updateHUD() {
-            let p={s:0,m:0,u:45, mis:[]}, c={s:0,m:0,u:45, mis:[]}, b={s:0,m:0,u:90, mis:[]};
-            STUDENT.forEach((ans, i) => {
-                let t = (i < 45) ? p : (i < 90) ? c : b;
-                if(ans) { t.u--; if(ans.status === 'C') t.s += 4; else { t.s -= 1; t.m++; t.mis.push(i+1); } }
+        function updateScores() {
+            let score = 0, correct = 0, wrong = 0;
+            STUDENT.forEach(ans => {
+                if(ans) {
+                    if(ans.status === 'C') { score += 4; correct++; }
+                    else { score -= 1; wrong++; }
+                }
             });
-            STATS = { phy: p, chem: c, bio: b };
-            document.getElementById('scorePhy').innerText = p.s; document.getElementById('statPhy').innerText = `M: ${p.m} | U: ${p.u}`;
-            document.getElementById('scoreChem').innerText = c.s; document.getElementById('statChem').innerText = `M: ${c.m} | U: ${c.u}`;
-            document.getElementById('scoreBio').innerText = b.s; document.getElementById('statBio').innerText = `M: ${b.m} | U: ${b.u}`;
-            document.getElementById('grandTotal').innerText = p.s + c.s + b.s;
+            document.getElementById('grandTotal').innerText = score;
+            document.getElementById('countCorrect').innerText = correct;
+            document.getElementById('countWrong').innerText = wrong;
         }
 
-        function generatePDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'pt', 'a4');
-                const name = (document.getElementById('studentName').value || "STUDENT").toUpperCase();
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt', 'a4');
+            const name = (document.getElementById('studentName').value || "CANDIDATE").toUpperCase();
+            
+            // Header
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 600, 80, 'F');
+            doc.setTextColor(255); doc.setFontSize(20); doc.text("STRIDEPRO FORENSIC REPORT", 40, 45);
+            doc.setFontSize(10); doc.text(`CANDIDATE: ${name} | MASTER KEY: ${MASTER.length} Qs`, 40, 65);
+
+            // Summary
+            doc.setTextColor(30); doc.setFontSize(12); doc.text("EXAM METRICS", 40, 110);
+            doc.setFillColor(248, 250, 252); doc.roundedRect(40, 120, 515, 40, 5, 5, 'F');
+            doc.setFontSize(10); doc.text(`Score: ${document.getElementById('grandTotal').innerText} | Correct: ${document.getElementById('countCorrect').innerText} | Wrong: ${document.getElementById('countWrong').innerText}`, 55, 145);
+
+            // OMR Visuals
+            let y = 200;
+            doc.setFontSize(12); doc.text("AUDITED OMR RECONSTRUCTION", 40, y);
+            y += 30;
+            
+            for(let i=0; i<180; i++) {
+                let col = Math.floor(i/45), row = i % 45, px = 40 + (col * 135), py = y + (row * 11);
+                doc.setFontSize(6); 
+                // Only highlight questions within the key length
+                doc.setTextColor(i < MASTER.length ? 100 : 220);
+                doc.text(`${i+1}`, px, py);
                 
-                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 600, 80, 'F');
-                doc.setTextColor(255); doc.setFontSize(22); doc.text("STRIDEPRO FORENSIC AUDIT", 40, 45);
-                doc.setFontSize(10); doc.text(`CANDIDATE: ${name} | SCORE: ${document.getElementById('grandTotal').innerText}/720`, 40, 65);
-
-                let y = 110;
-                [{n:"PHYSICS", d:STATS.phy},{n:"CHEMISTRY", d:STATS.chem},{n:"BIOLOGY", d:STATS.bio}].forEach(sub => {
-                    doc.setFillColor(248, 250, 252); doc.roundedRect(40, y, 515, 50, 5, 5, 'F');
-                    doc.setTextColor(30); doc.setFontSize(11); doc.text(`${sub.n}: ${sub.d.s} Marks`, 55, y+20);
-                    doc.setFontSize(8); doc.setTextColor(200, 0, 0);
-                    doc.text(`Mistakes: ${sub.d.mis.join(', ') || 'None'}`, 55, y+38, {maxWidth: 480});
-                    y += 60;
-                });
-
-                doc.setTextColor(30); doc.setFontSize(12); doc.text("VISUAL OMR RECONSTRUCTION", 40, y+20);
-                y += 40;
-                for(let i=0; i<180; i++) {
-                    let col = Math.floor(i/45), row = i % 45, px = 40 + (col * 135), py = y + (row * 11);
-                    doc.setFontSize(6); doc.setTextColor(150); doc.text(`${i+1}`, px, py);
-                    for(let b=1; b<=4; b++) {
-                        let bx = px + 20 + (b*18); doc.setDrawColor(220);
-                        if(STUDENT[i] && STUDENT[i].v === b) {
-                            doc.setFillColor(STUDENT[i].status === 'C' ? [34, 197, 94] : [239, 68, 68]);
-                            doc.circle(bx, py-2, 3.5, 'F');
-                        } else { doc.circle(bx, py-2, 3.5, 'D'); }
+                for(let b=1; b<=4; b++) {
+                    let bx = px + 20 + (b*18);
+                    doc.setDrawColor(230);
+                    if(STUDENT[i] && STUDENT[i].v === b) {
+                        doc.setFillColor(STUDENT[i].status === 'C' ? [34, 197, 94] : [239, 68, 68]);
+                        doc.circle(bx, py-2, 3.5, 'F');
+                    } else {
+                        doc.circle(bx, py-2, 3.5, 'D');
                     }
                 }
-                
-                // CRITICAL IPAD FIX: Use dataurl instead of blob for broad browser support
-                const dataUri = doc.output('datauristring');
-                const newWindow = window.open();
-                if (newWindow) {
-                    newWindow.document.write('<iframe width="100%" height="100%" src="' + dataUri + '"></iframe>');
-                } else {
-                    alert("Please allow pop-ups for this site to view the report.");
-                }
-
-            } catch (err) {
-                console.error(err);
-                alert("PDF Error: Please ensure you have synced a 180-digit key first.");
             }
+
+            // iPad Specific Download logic
+            const blob = doc.output('blob');
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
         }
+
         init();
     </script>
 </body>
