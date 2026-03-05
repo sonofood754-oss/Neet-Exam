@@ -3,294 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEET Stride Pro | CodePen Original</title>
-    
+    <title>NEET STRIDE PRO | Forensic Auditor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Outfit:wght@300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
         
-        :root {
-            --str-primary: #1d4ed8; /* Original deep blue */
-            --str-success: #16a34a; /* Original green */
-            --str-danger: #dc2626; /* Original red */
-            --str-light: #f1f5f9;
-        }
-
-        body {
-            background-color: var(--str-light);
-            color: #1e293b;
-            font-family: 'Outfit', sans-serif;
-            scroll-behavior: smooth;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .omr-bubble {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #94a3b8;
-            background-color: white;
-            color: #475569;
-            font-family: 'Roboto Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 9999px;
-            transition: all 0.2s;
-            cursor: pointer;
-            margin-left: 6px;
-        }
-
-        /* The core request: Instant correct/wrong visualization */
-        .omr-bubble.selected-correct {
-            background-color: var(--str-success);
-            border-color: var(--str-success);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .omr-bubble.selected-wrong {
-            background-color: var(--str-danger);
-            border-color: var(--str-danger);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        /* Original 4-Column Layout */
-        .omr-card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 1rem;
-        }
-
-        .omr-master-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 1024px) {
-            .omr-master-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-        }
-
+        body { background-color: #f8fafc; color: #1e293b; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Subject Column Layout for Vertical Flow */
+        .subject-column { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
         .omr-row {
             display: flex;
             align-items: center;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.5rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f5f9;
+            justify-content: space-between;
         }
 
-        .omr-row:hover { background-color: #f8fafc; }
+        .q-num { font-weight: 700; color: #64748b; width: 30px; font-size: 13px; }
 
-        .q-tag { font-family: 'Roboto Condensed', sans-serif; font-weight: 400; color: #64748b; width: 22px; text-align: right; margin-right: 8px; }
+        /* Modern Circular Bubbles from your Good UI */
+        .bubble {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            font-weight: 700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-left: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-        .sticky-score-hud {
+        /* Instant Correct/Wrong States */
+        .bubble.correct { background: #22c55e !important; border-color: #22c55e !important; color: white !important; transform: scale(1.1); }
+        .bubble.wrong { background: #ef4444 !important; border-color: #ef4444 !important; color: white !important; transform: scale(1.1); }
+
+        .sticky-hud {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background-color: white;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            background: white;
             border-top: 1px solid #e2e8f0;
-            padding: 1rem;
+            padding: 15px 30px;
             z-index: 1000;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
         }
     </style>
 </head>
-<body class="p-4 md:p-8 pb-32">
+<body class="pb-40">
 
-    <main class="max-w-[1600px] mx-auto space-y-8">
-        <header class="mb-10 text-center">
-            <h1 class="text-4xl font-black tracking-tighter text-str-primary">NEET<span class="text-slate-900">STRIDE</span>PRO</h1>
-            <p class="text-slate-500 text-xs uppercase tracking-widest mt-1">High-Performance Forensic Auditor</p>
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-black tracking-tighter text-slate-900">NEET<span class="text-blue-600">STRIDE</span>PRO</h1>
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">High-Performance Forensic Auditor</p>
         </header>
 
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 omr-card">
-            <div class="space-y-4">
-                <h3 class="text-sm font-bold uppercase tracking-wide text-slate-500">STEP 1: UPLOAD IMAGE ANSWER KEY</h3>
-                <div class="flex items-center gap-3">
-                    <label class="block">
-                        <span class="sr-only">Choose File</span>
-                        <input type="file" id="imageInput" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-                    </label>
-                    <button onclick="scanImageKey()" class="bg-str-primary text-white text-xs px-6 py-2.5 rounded-full font-bold active:scale-95 transition">Scan Image Key</button>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-2">Step 1: Student Identity</label>
+                <input type="text" id="studentName" placeholder="Enter Student Name" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-blue-500 transition font-bold text-slate-700">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-2">Step 2: Paste 180-Digit Key</label>
+                <div class="flex gap-2">
+                    <input type="text" id="keyInput" placeholder="12341..." class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none font-mono text-xs focus:border-blue-500 transition">
+                    <button onclick="syncKey()" class="bg-slate-900 text-white px-6 rounded-xl font-bold text-xs uppercase hover:bg-blue-600 transition">Sync</button>
                 </div>
-            </div>
-            
-            <div class="space-y-4">
-                <h3 class="text-sm font-bold uppercase tracking-wide text-slate-500">STEP 2: PASTE TEXT ANSWER KEY</h3>
-                <div class="flex items-center gap-3">
-                    <input type="text" id="textKeyInput" placeholder="Example: 12341..." class="flex-1 bg-slate-50 border border-slate-300 p-2.5 rounded-full outline-none font-mono text-xs focus:border-str-primary">
-                    <button onclick="applyTextKey()" class="bg-slate-800 text-white text-xs px-6 py-3 rounded-full font-bold active:scale-95 transition">Apply Text Key</button>
-                </div>
-            </div>
-        </section>
-
-        <div id="keyStatusPanel" class="text-center font-black text-sm text-str-danger omr-card py-3">Key Status: Not Loaded</div>
-
-        <section class="omr-master-grid" id="mainGridContainer"></section>
-    </main>
-
-    <div class="sticky-score-hud flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="grid grid-cols-3 gap-8 w-full md:w-auto text-center md:text-left">
-            <div>
-                <p class="text-[9px] font-black uppercase text-slate-500">Physics (1-45)</p>
-                <p class="text-3xl font-black text-str-primary" id="scorePhy">0</p>
-                <p class="text-[10px] text-slate-400" id="mistakePhy">MISTAKES: 0 | UNATTEMPTED: 45</p>
-            </div>
-            <div>
-                <p class="text-[9px] font-black uppercase text-slate-500">Chemistry (46-90)</p>
-                <p class="text-3xl font-black text-emerald-600" id="scoreChem">0</p>
-                <p class="text-[10px] text-slate-400" id="mistakeChem">MISTAKES: 0 | UNATTEMPTED: 45</p>
-            </div>
-            <div>
-                <p class="text-[9px] font-black uppercase text-slate-500">Biology (91-180)</p>
-                <p class="text-3xl font-black text-rose-600" id="scoreBio">0</p>
-                <p class="text-[10px] text-slate-400" id="mistakeBio">MISTAKES: 0 | UNATTEMPTED: 90</p>
             </div>
         </div>
-        
-        <div class="flex items-center gap-4 w-full md:w-auto justify-center md:justify-end">
-            <div class="text-center md:text-right">
-                <p class="text-[10px] font-black uppercase text-slate-500">Total Score</p>
-                <div class="flex items-baseline justify-center md:justify-end gap-1">
-                    <span id="grandTotalScore" class="text-7xl font-black leading-none text-slate-900">0</span>
-                    <span class="text-3xl font-black italic text-str-primary">out of 720</span>
-                </div>
+
+        <div id="keyStatus" class="text-center mb-8 font-bold text-sm text-red-500 italic">Key Status: Not Loaded</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="subject-column">
+                <h3 class="text-blue-600 font-black text-xs uppercase mb-4 text-center">Physics (1-45)</h3>
+                <div id="col-1"></div>
             </div>
-            <button onclick="downloadAuditPDF()" class="bg-str-primary text-white text-sm px-10 py-5 rounded-xl font-bold active:scale-95 transition shadow-lg">Download Report</button>
+            <div class="subject-column">
+                <h3 class="text-emerald-600 font-black text-xs uppercase mb-4 text-center">Chemistry (46-90)</h3>
+                <div id="col-2"></div>
+            </div>
+            <div class="subject-column">
+                <h3 class="text-rose-600 font-black text-xs uppercase mb-4 text-center">Biology (91-135)</h3>
+                <div id="col-3"></div>
+            </div>
+            <div class="subject-column">
+                <h3 class="text-rose-600 font-black text-xs uppercase mb-4 text-center">Biology (136-180)</h3>
+                <div id="col-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky-hud flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex gap-10">
+            <div class="text-center">
+                <p class="text-[9px] font-black text-slate-400 uppercase">Physics</p>
+                <p id="scorePhy" class="text-2xl font-black text-blue-600">0</p>
+            </div>
+            <div class="text-center border-l border-slate-100 pl-10">
+                <p class="text-[9px] font-black text-slate-400 uppercase">Chemistry</p>
+                <p id="scoreChem" class="text-2xl font-black text-emerald-600">0</p>
+            </div>
+            <div class="text-center border-l border-slate-100 pl-10">
+                <p class="text-[9px] font-black text-slate-400 uppercase">Biology</p>
+                <p id="scoreBio" class="text-2xl font-black text-rose-600">0</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="text-right">
+                <p class="text-[10px] font-black text-slate-400 uppercase">Total Score</p>
+                <p class="text-4xl font-black text-slate-900"><span id="grandTotal">0</span> <span class="text-lg text-blue-600">/ 720</span></p>
+            </div>
+            <button onclick="downloadReport()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-lg shadow-blue-200 hover:bg-blue-700 transition">Download Report</button>
         </div>
     </div>
 
     <script>
-        // Master Key Storage
-        let MASTER_KEY = [];
-        let STUDENT_ANSWERS = new Array(180).fill(null);
-        let TOTAL_SCORE = 0;
-        let ANALYSIS = { phy: {m:0, u:45, s:0}, chem: {m:0, u:45, s:0}, bio: {m:0, u:90, s:0} };
+        let MASTER = [];
+        let STUDENT = new Array(180).fill(null);
 
-        // Initialize the Quad-Column Grid
-        function buildOriginalOMR() {
-            const container = document.getElementById('mainGridContainer');
-            for(let i=1; i<=180; i++) {
-                container.innerHTML += `
-                    <div class="omr-card">
-                        <div class="omr-row" data-question-number="${i}">
-                            <span class="q-tag">${i}.</span>
-                            <div class="flex">
-                                <button class="omr-bubble" onclick="markAnswer(${i}, 1, this)">1</button>
-                                <button class="omr-bubble" onclick="markAnswer(${i}, 2, this)">2</button>
-                                <button class="omr-bubble" onclick="markAnswer(${i}, 3, this)">3</button>
-                                <button class="omr-bubble" onclick="markAnswer(${i}, 4, this)">4</button>
-                            </div>
+        function init() {
+            renderSection(1, 45, 'col-1'); renderSection(46, 90, 'col-2');
+            renderSection(91, 135, 'col-3'); renderSection(136, 180, 'col-4');
+        }
+
+        function renderSection(s, e, id) {
+            const el = document.getElementById(id);
+            for(let i=s; i<=e; i++) {
+                el.innerHTML += `
+                    <div class="omr-row" data-q="${i}">
+                        <span class="q-num">${i}.</span>
+                        <div class="flex">
+                            ${[1,2,3,4].map(n => `<div class="bubble" onclick="audit(${i}, ${n}, this)">${n}</div>`).join('')}
                         </div>
                     </div>`;
             }
         }
 
-        // Apply Key and Update Status
-        function applyMasterKey(digits) {
-            MASTER_KEY = digits;
-            const statusPanel = document.getElementById('keyStatusPanel');
-            if(MASTER_KEY.length === 180) {
-                statusPanel.innerText = "Key Status: Loaded (180 Qs)";
-                statusPanel.classList.remove('text-str-danger');
-                statusPanel.classList.add('text-str-success');
-            } else { alert("Error: 180 digits required."); }
-        }
-
-        function applyTextKey() {
-            const raw = document.getElementById('textKeyInput').value;
-            const digits = raw.match(/[1-4]/g) || [];
-            applyMasterKey(digits);
-        }
-
-        function scanImageKey() {
-            const file = document.getElementById('imageInput').files[0];
-            if (!file) { alert('Please select an image.'); return; }
-            document.getElementById('keyStatusPanel').innerText = "Scanning... please wait.";
-            Tesseract.recognize(file, 'eng', { logger: m => console.log(m) }).then(({ data: { text } }) => {
-                const digits = text.match(/[1-4]/g) || [];
-                applyMasterKey(digits);
-            });
-        }
-
-        // Core Requirement: Instant Audit on Click
-        function markAnswer(qNum, selectedValue, element) {
-            if(MASTER_KEY.length !== 180) { alert("Please load the master key first."); return; }
-            
-            // 1. Logic check
-            const correctAnswer = parseInt(MASTER_KEY[qNum-1]);
-            const row = element.parentElement;
-            
-            // 2. Clear visual state for this row
-            row.querySelectorAll('.omr-bubble').forEach(b => {
-                b.classList.remove('selected-correct', 'selected-wrong');
-            });
-
-            // 3. Apply Audit Visualization
-            if(selectedValue === correctAnswer) {
-                element.classList.add('selected-correct');
-                STUDENT_ANSWERS[qNum-1] = {val: selectedValue, status: 'C'};
+        function syncKey() {
+            const input = document.getElementById('keyInput').value;
+            MASTER = input.match(/[1-4]/g) || [];
+            const status = document.getElementById('keyStatus');
+            if(MASTER.length >= 180) {
+                status.innerText = "Key Status: Loaded (180 Qs)";
+                status.className = "text-center mb-8 font-bold text-sm text-emerald-500";
             } else {
-                element.classList.add('selected-wrong');
-                STUDENT_ANSWERS[qNum-1] = {val: selectedValue, status: 'W'};
+                alert("Please paste exactly 180 digits.");
             }
-
-            // 4. Update HUD Statistics
-            updateHUDStats();
         }
 
-        function updateHUDStats() {
-            TOTAL_SCORE = 0;
-            ANALYSIS = { phy: {m:0, u:0, s:0}, chem: {m:0, u:0, s:0}, bio: {m:0, u:0, s:0} };
+        function audit(q, val, el) {
+            if(MASTER.length < 180) { alert("Sync Key First!"); return; }
+            
+            const row = el.parentElement;
+            row.querySelectorAll('.bubble').forEach(b => b.className = 'bubble');
+            
+            const correct = parseInt(MASTER[q-1]);
+            if(val === correct) {
+                el.classList.add('correct');
+                STUDENT[q-1] = { v: val, status: 'C' };
+            } else {
+                el.classList.add('wrong');
+                STUDENT[q-1] = { v: val, status: 'W' };
+            }
+            updateScores();
+        }
 
-            STUDENT_ANSWERS.forEach((ans, i) => {
-                const qNum = i + 1;
-                let s = qNum <= 45 ? 'phy' : (qNum <= 90 ? 'chem' : 'bio');
-                
-                if(ans === null) { ANALYSIS[s].u++; }
-                else if(ans.status === 'C') { ANALYSIS[s].s += 4; TOTAL_SCORE += 4; }
-                else { ANALYSIS[s].s -= 1; ANALYSIS[s].m++; TOTAL_SCORE -= 1; }
+        function updateScores() {
+            let p=0, c=0, b=0;
+            STUDENT.forEach((ans, i) => {
+                if(!ans) return;
+                let pts = ans.status === 'C' ? 4 : -1;
+                if(i < 45) p += pts;
+                else if(i < 90) c += pts;
+                else b += pts;
             });
-
-            // Apply to DOM
-            document.getElementById('scorePhy').innerText = ANALYSIS.phy.s;
-            document.getElementById('scoreChem').innerText = ANALYSIS.chem.s;
-            document.getElementById('scoreBio').innerText = ANALYSIS.bio.s;
-            document.getElementById('grandTotalScore').innerText = TOTAL_SCORE;
-
-            document.getElementById('mistakePhy').innerText = `MISTAKES: ${ANALYSIS.phy.m} | UNATTEMPTED: ${ANALYSIS.phy.u}`;
-            document.getElementById('mistakeChem').innerText = `MISTAKES: ${ANALYSIS.chem.m} | UNATTEMPTED: ${ANALYSIS.chem.u}`;
-            document.getElementById('mistakeBio').innerText = `MISTAKES: ${ANALYSIS.bio.m} | UNATTEMPTED: ${ANALYSIS.bio.u}`;
+            document.getElementById('scorePhy').innerText = p;
+            document.getElementById('scoreChem').innerText = c;
+            document.getElementById('scoreBio').innerText = b;
+            document.getElementById('grandTotal').innerText = p + c + b;
         }
 
-        // Original PDF Report Function
-        function downloadAuditPDF() {
+        async function downloadReport() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'pt', 'a4');
-            const total = document.getElementById('grandTotalScore').innerText;
+            const name = document.getElementById('studentName').value || "STUDENT";
+            const total = document.getElementById('grandTotal').innerText;
 
-            doc.setFillColor(29, 78, 216); doc.rect(0, 0, 600, 80, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("NEET STRIDE FORENSIC REPORT", 40, 50);
-            doc.setFontSize(10); doc.text(`TOTAL AUDIT SCORE: ${total}/720`, 40, 70);
+            doc.setFillColor(30, 41, 59); doc.rect(0, 0, 600, 80, 'F');
+            doc.setTextColor(255); doc.setFontSize(20); doc.text("NEET STRIDE PERFORMANCE REPORT", 40, 45);
+            doc.setFontSize(10); doc.text(`CANDIDATE: ${name.toUpperCase()} | TOTAL SCORE: ${total}/720`, 40, 65);
 
-            let y = 120;
-            const subData = [ {n: "PHYSICS", a: ANALYSIS.phy}, {n: "CHEMISTRY", a: ANALYSIS.chem}, {n: "BIOLOGY", a: ANALYSIS.bio} ];
-            subData.forEach(s => {
-                doc.setFillColor(241); doc.roundedRect(40, y, 515, 60, 5, 5, 'F');
-                doc.setTextColor(30); doc.setFontSize(12); doc.text(s.n, 55, y+20);
-                doc.setFontSize(9); doc.setTextColor(80);
-                doc.text(`Score: ${s.a.s} | Mistakes: ${s.a.m} | Unattempted: ${s.a.u}`, 55, y+40);
-                y += 75;
+            // Analysis Sections
+            let y = 110;
+            const data = [
+                {t: "PHYSICS", s: document.getElementById('scorePhy').innerText},
+                {t: "CHEMISTRY", s: document.getElementById('scoreChem').innerText},
+                {t: "BIOLOGY", s: document.getElementById('scoreBio').innerText}
+            ];
+
+            data.forEach(item => {
+                doc.setFillColor(248, 250, 252); doc.roundedRect(40, y, 515, 40, 5, 5, 'F');
+                doc.setTextColor(50); doc.setFontSize(11); doc.text(`${item.t}: ${item.s} Marks`, 55, y+25);
+                y += 50;
             });
-            doc.save(`AuditReport_${total}.pdf`);
+
+            // iPad Safe Download Fallback
+            const blob = doc.output('blob');
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Report_${name}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => { document.body.removeChild(link); window.open(url); }, 500);
         }
 
-        buildOriginalOMR();
+        init();
     </script>
 </body>
 </html>
